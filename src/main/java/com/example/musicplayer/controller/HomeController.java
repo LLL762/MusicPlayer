@@ -3,10 +3,7 @@ package com.example.musicplayer.controller;
 import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -46,8 +43,12 @@ public class HomeController implements Initializable {
     @FXML
     private ListView<String> fileListView;
 
+    @FXML
+    private Button playButton;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
 
         init();
 
@@ -119,7 +120,7 @@ public class HomeController implements Initializable {
 
         audioTimeSlider.setMin(0);
         audioTimeSlider.setMax(mediaPlayer.getTotalDuration().toMinutes());
-        audioTimeSlider.setValue(1);
+        audioTimeSlider.setValue(0);
 
 
         audioTimeSlider.setOnMousePressed(e -> removeAudioTimeListener());
@@ -207,10 +208,16 @@ public class HomeController implements Initializable {
 
         if (status.equals(MediaPlayer.Status.PLAYING)) {
 
+
+            playButton.getStyleClass().removeAll("play-button");
+            playButton.getStyleClass().add("pause-button");
+
             mediaPlayer.pause();
             return;
         }
 
+        playButton.getStyleClass().removeAll("pause-button");
+        playButton.getStyleClass().add("play-button");
         mediaPlayer.play();
 
     }
