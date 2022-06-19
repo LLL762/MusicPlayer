@@ -14,6 +14,8 @@ public final class SliderDecorator {
 		slider.setMax(maxValue);
 		slider.setValue(value);
 
+		slider.setBlockIncrement(0.25);
+
 	}
 
 }

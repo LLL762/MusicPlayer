@@ -7,6 +7,48 @@
 }
 
 
+#audioTimeSlider .thumb {
+	
+	-fx-background-color : red;
+	-fx-scale-x: 1;
+	-fx-scale-y: 0.75;
+
+	
+
+}
+
+
+
+#audioTimeSlider:hover {
+	
+
+    -fx-scale-y: 1.25;
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+/* #audioTimeSlider .track { */
+	
+	
+/* 	 -fx-background-color : linear-gradient(to left,  red 10% ,  grey 50%); */
+
+
+
+
+/* } */
+
+
+	/* -fx-control-inner-background: #1354cb; */
+
+
 .play-button {
 
   -fx-background-color: red;
