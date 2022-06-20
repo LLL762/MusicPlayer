@@ -1,7 +1,19 @@
 package com.example.musicplayer.controller;
 
-import static com.example.musicplayer.component.SliderDecorator.setUp;
-import static java.util.Collections.addAll;
+import com.example.musicplayer.component.SpeedComboBuilder;
+import javafx.beans.InvalidationListener;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
+import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
@@ -12,320 +24,355 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javafx.beans.InvalidationListener;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.Slider;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
-import javafx.stage.FileChooser;
-import javafx.util.Duration;
+import static com.example.musicplayer.component.SliderDecorator.setUp;
+import static java.util.Collections.addAll;
 
 public class HomeController implements Initializable {
 
-	private List<File> playList = new ArrayList<>();
-	private File playListDirectory;
+    private List<File> playList = new ArrayList<>();
+    private File playListDirectory;
 
-	private Media media;
+    private Media media;
 
-	private Status mediaStatus = Status.UNKNOWN;
+    private Status mediaStatus = Status.UNKNOWN;
 
-	private MediaPlayer mediaPlayer;
-	@FXML
-	private Label songNameLabel, durationLabel;
-	@FXML
-	private Slider audioTimeSlider;
-	private final InvalidationListener audioTimeListener = observable -> {
+    private MediaPlayer mediaPlayer;
+    @FXML
+    private Label songNameLabel, durationLabel;
+    @FXML
+    private Slider audioTimeSlider;
+    private final InvalidationListener audioTimeListener = observable -> {
 
-		DecimalFormat formatter = new DecimalFormat("##0.00");
-		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
-		double minutes = mediaPlayer.getCurrentTime().toMinutes();
+        DecimalFormat formatter = new DecimalFormat("##0.00");
+        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+        double minutes = mediaPlayer.getCurrentTime().toMinutes();
 
-		audioTimeSlider.setValue(mediaPlayer.getCurrentTime().toMinutes());
+        audioTimeSlider.setValue(mediaPlayer.getCurrentTime().toMinutes());
 
-		otherSymbols.setDecimalSeparator(':');
+        otherSymbols.setDecimalSeparator(':');
 
-		formatter.setDecimalFormatSymbols(otherSymbols);
+        formatter.setDecimalFormatSymbols(otherSymbols);
 
-		durationLabel.setText(
-				formatter.format(minutes) + "/" + formatter.format(mediaPlayer.getTotalDuration().toMinutes()));
+        durationLabel.setText(
+                formatter.format(minutes) + "/" + formatter.format(mediaPlayer.getTotalDuration().toMinutes()));
 
-	};
-	@FXML
-	private BarChart<String, Number> audioBarChart;
-	@FXML
-	private Slider speedSlider, volumeSlider;
+    };
 
-	@FXML
-	private ListView<String> fileListView;
+    @FXML
+    private BarChart<String, Number> audioBarChart;
+    @FXML
+    private Slider volumeSlider;
 
-	@FXML
-	private Button playPauseButton;
+    @FXML
+    private ListView<String> fileListView;
 
-	private XYChart.Series<String, Number> topSeries = new XYChart.Series<>();
-	private XYChart.Series<String, Number> bottomSeries = new XYChart.Series<>();
+    @FXML
+    private Button playPauseButton;
 
-	@Override
-	public void initialize(URL url, ResourceBundle resourceBundle) {
+    @FXML
+    private ComboBox<String> speedComboBox;
 
-		init();
 
-	}
+    private XYChart.Series<String, Number> topSeries = new XYChart.Series<>();
+    private XYChart.Series<String, Number> bottomSeries = new XYChart.Series<>();
 
-	public void init() {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
 
-		initPlayList();
-		initAudioBarChart();
-		initMedia(playList.get(0).toURI().toString());
-		initVolumeSlider();
-		initSpeedSlider();
-		initFileListView();
+        init();
 
-		mediaPlayer.play();
+    }
 
-	}
+    public void init() {
 
-	private void initPlayList() {
+        initPlayList();
+        initAudioBarChart();
+        initMedia(playList.get(0).toURI().toString());
+        initVolumeSlider();
+        initSpeedComboBox();
+        initFileListView();
+        initSpeedComboBox();
 
-		final String pathname = HomeController.class.getResource("/songs").toExternalForm();
 
-		playListDirectory = new File(
-				String.valueOf(pathname).substring(6));
+        mediaPlayer.play();
 
-		addAll(playList, Objects.requireNonNull(playListDirectory.listFiles()));
 
-	}
+    }
 
-	private void initMedia(String path) {
 
-		media = new Media(path);
-		mediaPlayer = new MediaPlayer(media);
+    private void initSpeedComboBox() {
 
-		mediaPlayer.setOnReady(this::initAudioTimeSlider);
-		mediaPlayer.currentTimeProperty().addListener(audioTimeListener);
-		mediaPlayer.setAudioSpectrumListener((timestamps, duration, magnitudes, phases) -> {
+        SpeedComboBuilder.build(speedComboBox);
 
-			topSeries.getData().clear();
 
-			bottomSeries.getData().clear();
+    }
 
-			/*
-			 * Ajoute les magnitudes (taille 128) au diagramme -60 est la valeur minimale de
-			 * la magnitude
-			 */
-			for (int i = 0; i < magnitudes.length; i++) {
+    private void initPlayList() {
 
-				/* Partie haute positive */
-				topSeries.getData().add(new XYChart.Data<>(String.valueOf(i), magnitudes[i] + 60));
+        final String pathname = HomeController.class.getResource("/songs").toExternalForm();
 
-				/* Partie basse négative */
-				bottomSeries.getData()
-							.add(new XYChart.Data<>(String.valueOf(i), -(magnitudes[i] + 60)));
+        playListDirectory = new File(
+                String.valueOf(pathname).substring(6));
 
-			}
+        addAll(playList, Objects.requireNonNull(playListDirectory.listFiles()));
 
-		}
+    }
 
-		);
+    private void initMedia(String path) {
 
-		mediaPlayer.setOnEndOfMedia(this::nextSong);
+        media = new Media(path);
+        mediaPlayer = new MediaPlayer(media);
 
-	}
+        mediaPlayer.setOnReady(this::initAudioTimeSlider);
 
-	private void initAudioBarChart() {
 
-		audioBarChart.getYAxis().setAutoRanging(false);
+        mediaPlayer.currentTimeProperty().addListener(audioTimeListener);
+        mediaPlayer.setAudioSpectrumListener((timestamps, duration, magnitudes, phases) -> {
 
-		audioBarChart.getData().add(topSeries);
-		audioBarChart.getData().add(bottomSeries);
+                    topSeries.getData().clear();
 
-	}
+                    bottomSeries.getData().clear();
 
-	private void initFileListView() {
+                    /*
+                     * Ajoute les magnitudes (taille 128) au diagramme -60 est la valeur minimale de
+                     * la magnitude
+                     */
+                    for (int i = 0; i < magnitudes.length; i++) {
 
-		final MultipleSelectionModel<String> selectionModel;
+                        /* Partie haute positive */
+                        topSeries.getData().add(new XYChart.Data<>(String.valueOf(i), magnitudes[i] + 60));
 
-		fileListView.getItems().addAll(
-				playList.stream()
-						.map(File::getName)
-						.toList());
+                        /* Partie basse négative */
+                        bottomSeries.getData()
+                                .add(new XYChart.Data<>(String.valueOf(i), -(magnitudes[i] + 60)));
 
-		fileListView.getSelectionModel().selectFirst();
-		songNameLabel.setText(fileListView.getSelectionModel().getSelectedItem());
+                    }
 
-		selectionModel = fileListView.getSelectionModel();
-		selectionModel	.selectedIndexProperty()
-						.addListener(observable -> setPlayListItem(selectionModel.getSelectedItem()));
+                }
 
-	}
+        );
 
-	private void initAudioTimeSlider() {
+        mediaPlayer.setOnEndOfMedia(this::nextSong);
 
-		setUp(audioTimeSlider, 0, mediaPlayer.getTotalDuration().toMinutes(), 0);
+    }
 
-		audioTimeSlider.valueProperty().addListener(obs -> {
+    private void initAudioBarChart() {
 
-			String progress = String.valueOf(audioTimeSlider.getValue() * 100 / audioTimeSlider.getMax());
+        audioBarChart.getYAxis().setAutoRanging(false);
 
-			audioTimeSlider	.lookup(".track")
-							.setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
-									+ progress
-									+ "%);");
-		});
+        audioBarChart.getData().add(topSeries);
+        audioBarChart.getData().add(bottomSeries);
 
-		audioTimeSlider.setOnMousePressed(e -> removeAudioTimeListener());
-		audioTimeSlider.setOnMouseReleased(e -> setMediaCurrentTime());
-		audioTimeSlider.setOnKeyPressed(e -> removeAudioTimeListener());
-		audioTimeSlider.setOnKeyReleased(e -> setMediaCurrentTime());
+    }
 
-	}
+    private void initFileListView() {
 
-	private void initSpeedSlider() {
+        final MultipleSelectionModel<String> selectionModel;
 
-		setUp(speedSlider, 0.1, 8, 1);
+        fileListView.getItems().addAll(
+                playList.stream()
+                        .map(File::getName)
+                        .toList());
 
-		speedSlider.valueProperty().addListener(e -> changeAudioSpeed());
-	}
+        fileListView.getSelectionModel().selectFirst();
+        songNameLabel.setText(fileListView.getSelectionModel().getSelectedItem());
 
-	private void initVolumeSlider() {
+        selectionModel = fileListView.getSelectionModel();
+        selectionModel.selectedIndexProperty()
+                .addListener(observable -> setPlayListItem(selectionModel.getSelectedItem()));
 
-		setUp(volumeSlider, 0, 1, 1);
+    }
 
-		volumeSlider.valueProperty().addListener(e -> changeAudioVolume());
+    private void initAudioTimeSlider() {
 
-	}
+        setUp(audioTimeSlider, 0, mediaPlayer.getTotalDuration().toMinutes(), 0);
 
-	private void changeAudioVolume() {
+        audioTimeSlider.valueProperty().addListener(obs -> {
 
-		mediaPlayer.setVolume(volumeSlider.getValue());
+            String progress = String.valueOf(audioTimeSlider.getValue() * 100 / audioTimeSlider.getMax());
 
-	}
+            audioTimeSlider.lookup(".track")
+                    .setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
+                            + progress
+                            + "%);");
+        });
 
-	private void changeAudioSpeed() {
+        audioTimeSlider.getTooltip().setShowDelay(Duration.valueOf("100ms"));
+        audioTimeSlider.setOnMouseMoved(this::updateTooltip);
 
-		mediaPlayer.setRate(speedSlider.getValue());
 
-	}
+        audioTimeSlider.setOnMousePressed(e -> removeAudioTimeListener());
+        audioTimeSlider.setOnMouseReleased(e -> setMediaCurrentTime());
+        audioTimeSlider.setOnKeyPressed(e -> removeAudioTimeListener());
+        audioTimeSlider.setOnKeyReleased(e -> setMediaCurrentTime());
 
-	private void removeAudioTimeListener() {
+        hideThumb();
 
-		if (mediaStatus == Status.UNKNOWN) {
-			mediaStatus = mediaPlayer.getStatus();
+    }
 
-			// Solve problem when user types fast or use mouse and keyboard at the same time
-			// without throwing NPE, wrapping mediaStatus into an optional may be better.
-		}
 
-		mediaPlayer.pause();
+    private void initVolumeSlider() {
 
-		mediaPlayer.currentTimeProperty().removeListener(audioTimeListener);
-	}
+        setUp(volumeSlider, 0, 1, 1);
 
-	private void setMediaCurrentTime() {
+        volumeSlider.valueProperty().addListener(e -> changeAudioVolume());
 
-		mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
+    }
 
-		mediaPlayer.currentTimeProperty().addListener(audioTimeListener);
+    private void changeAudioVolume() {
 
-		if (mediaStatus.equals(Status.PLAYING)) {
+        mediaPlayer.setVolume(volumeSlider.getValue());
 
-			mediaPlayer.play();
-			mediaStatus = Status.UNKNOWN;
+    }
 
-		}
 
-	}
+    private void removeAudioTimeListener() {
 
-	private void setPlayListItem(final String item) {
+        if (mediaStatus == Status.UNKNOWN) {
+            mediaStatus = mediaPlayer.getStatus();
 
-		final String fileName = playList.stream()
-										.filter(v -> v.getName().equals(item))
-										.findFirst()
-										.orElseThrow()
-										.getName();
+            // Solve problem when user types fast or use mouse and keyboard at the same time
+            // without throwing NPE, wrapping mediaStatus into an optional may be better.
+        }
 
-		mediaPlayer.stop();
+        mediaPlayer.pause();
 
-		initMedia(HomeController.class.getResource("/songs").toExternalForm() + "/" + fileName);
+        mediaPlayer.currentTimeProperty().removeListener(audioTimeListener);
+    }
 
-		songNameLabel.setText(fileName);
-		changeAudioVolume();
-		changeAudioSpeed();
+    private void setMediaCurrentTime() {
 
-		mediaPlayer.play();
+        mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
 
-	}
+        mediaPlayer.currentTimeProperty().addListener(audioTimeListener);
 
-	public void playPause() {
+        if (mediaStatus.equals(Status.PLAYING)) {
 
-		final MediaPlayer.Status status = mediaPlayer.getStatus();
+            mediaPlayer.play();
+            mediaStatus = Status.UNKNOWN;
 
-		if (status.equals(MediaPlayer.Status.PLAYING)) {
+        }
 
-			playPauseButton.getStyleClass().removeAll("play-button");
-			playPauseButton.getStyleClass().add("pause-button");
+    }
 
-			mediaPlayer.pause();
-			return;
-		}
+    private void setPlayListItem(final String item) {
 
-		playPauseButton.getStyleClass().removeAll("pause-button");
-		playPauseButton.getStyleClass().add("play-button");
-		mediaPlayer.play();
+        final String fileName = playList.stream()
+                .filter(v -> v.getName().equals(item))
+                .findFirst()
+                .orElseThrow()
+                .getName();
 
-	}
+        mediaPlayer.stop();
 
-	public void reset() {
+        initMedia(HomeController.class.getResource("/songs").toExternalForm() + "/" + fileName);
 
-		mediaPlayer.seek(Duration.ZERO);
-	}
+        songNameLabel.setText(fileName);
+        changeAudioVolume();
+        changeSpeed();
 
-	public void previousSong() {
+        mediaPlayer.play();
 
-		final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
+    }
 
-		if (currentIndex <= 0) {
 
-			fileListView.getSelectionModel().selectLast();
-			return;
+    @FXML
+    private void changeSpeed() {
 
-		}
+        mediaPlayer.setRate(Double.parseDouble(speedComboBox.getValue().substring(1)));
 
-		fileListView.getSelectionModel().selectPrevious();
+    }
 
-	}
+    public void playPause() {
 
-	public void nextSong() {
+        final MediaPlayer.Status status = mediaPlayer.getStatus();
 
-		final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
+        if (status.equals(MediaPlayer.Status.PLAYING)) {
 
-		if (currentIndex >= fileListView.getItems().size() - 1) {
+            playPauseButton.getStyleClass().removeAll("play-button");
+            playPauseButton.getStyleClass().add("pause-button");
 
-			fileListView.getSelectionModel().selectFirst();
-			return;
+            mediaPlayer.pause();
+            return;
+        }
 
-		}
+        playPauseButton.getStyleClass().removeAll("pause-button");
+        playPauseButton.getStyleClass().add("play-button");
+        mediaPlayer.play();
 
-		fileListView.getSelectionModel().selectNext();
+    }
 
-	}
+    public void reset() {
 
-	public void playRandom() {
+        mediaPlayer.seek(Duration.ZERO);
+    }
 
-	}
+    public void previousSong() {
 
-	public void openFileChooser() {
-		final FileChooser fileChooser = new FileChooser();
+        final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
 
-		File file = fileChooser.showOpenDialog(songNameLabel.getScene().getWindow());
+        if (currentIndex <= 0) {
 
-	}
+            fileListView.getSelectionModel().selectLast();
+            return;
+
+        }
+
+        fileListView.getSelectionModel().selectPrevious();
+
+    }
+
+    public void nextSong() {
+
+        final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
+
+        if (currentIndex >= fileListView.getItems().size() - 1) {
+
+            fileListView.getSelectionModel().selectFirst();
+            return;
+
+        }
+
+        fileListView.getSelectionModel().selectNext();
+
+    }
+
+    public void playRandom() {
+
+    }
+
+    public void openFileChooser() {
+        final FileChooser fileChooser = new FileChooser();
+
+        File file = fileChooser.showOpenDialog(songNameLabel.getScene().getWindow());
+
+    }
+
+    public void showThumb() {
+
+        StackPane thumb = (StackPane) audioTimeSlider.lookup(".thumb");
+        thumb.setOpacity(1);
+
+
+    }
+
+    public void hideThumb() {
+
+        StackPane thumb = (StackPane) audioTimeSlider.lookup(".thumb");
+        thumb.setOpacity(0);
+
+    }
+
+
+    private void updateTooltip(MouseEvent e) {
+
+
+        audioTimeSlider.getTooltip().show(audioTimeSlider
+                , audioTimeSlider.localToScene(audioTimeSlider.getBoundsInLocal()) + e.getX()
+                , e.getY());
+
+
+    }
+
 
 }
