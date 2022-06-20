@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PlayList {
+import javafx.scene.media.MediaPlayer;
+
+public class PlayListModel {
 
 	private List<File> playList = new LinkedList<>();
+
+	private MediaPlayer currentMediaPlayer;
 
 	public void addFile(String absolutePath) {
 
