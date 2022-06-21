@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.media.MediaPlayer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,6 +46,9 @@ public class BarChartController implements PropertyChangeListener, Initializable
 
     public void init() {
 
+        audioBarChart.getData().add(topSeries);
+        audioBarChart.getData().add(bottomSeries);
+
         playListModel.addPropertyChangeListener(this);
 
         playListModel.getCurrentMediaPlayer()
@@ -79,6 +83,15 @@ public class BarChartController implements PropertyChangeListener, Initializable
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+
+        MediaPlayer newValue;
+
+        if (evt.getPropertyName().equals("media-change")) {
+
+            newValue = (MediaPlayer) evt.getNewValue();
+            newValue.setAudioSpectrumListener(this::displayAudio);
+
+        }
 
 
     }

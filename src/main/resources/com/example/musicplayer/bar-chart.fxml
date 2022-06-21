@@ -5,26 +5,19 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.text.Font?>
-<BarChart xmlns:fx="http://javafx.com/fxml/1"
-          fx:id="audioBarChart"
 
-          fx:controller="com.example.musicplayer.controller.BarChartController" alternativeRowFillVisible="false"
-
-          animated="false" horizontalGridLinesVisible="false" prefHeight="153.0" prefWidth="257.0"
-          verticalGridLinesVisible="false" verticalZeroLineVisible="false" xmlns="http://javafx.com/javafx/18">
+<BarChart fx:id="audioBarChart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" prefHeight="153.0" prefWidth="257.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.musicplayer.controller.BarChartController">
     <xAxis>
-        <CategoryAxis animated="false" autoRanging="false" endMargin="4.0" side="BOTTOM" startMargin="4.0"
-                      tickLabelGap="5.0" tickLabelsVisible="false">
+        <CategoryAxis animated="false" autoRanging="false" endMargin="4.0" side="BOTTOM" startMargin="4.0" tickLabelGap="5.0" tickLabelsVisible="false">
             <tickLabelFont>
-                <Font size="12.0"/>
+                <Font size="12.0" />
             </tickLabelFont>
             <effect>
-                <Bloom/>
+                <Bloom />
             </effect>
         </CategoryAxis>
     </xAxis>
     <yAxis>
-        <NumberAxis animated="false" lowerBound="-60.0" minorTickVisible="false" side="LEFT" tickLabelGap="5.0"
-                    tickLength="2.0" upperBound="60.0"/>
+        <NumberAxis animated="false" autoRanging="false" lowerBound="-60.0" minorTickVisible="false" side="LEFT" tickLabelGap="5.0" tickLength="2.0" upperBound="60.0" />
     </yAxis>
 </BarChart>

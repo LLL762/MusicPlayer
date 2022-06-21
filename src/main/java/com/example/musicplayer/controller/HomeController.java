@@ -7,11 +7,8 @@ import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
@@ -45,21 +42,12 @@ public class HomeController implements Initializable {
     private MediaPlayer mediaPlayer;
 
     @FXML
-    private VolumeController volumeController;
-
-
-    @FXML
-    private AudioTimeSliderController audioTimeSliderController;
-    @FXML
     private Label songNameLabel;
 
     @FXML
     private Label durationLabel;
     @FXML
     private Slider audioTimeSlider;
-
-    @FXML
-    private BarChart<String, Number> audioBarChart;
 
 
     @FXML
@@ -69,18 +57,11 @@ public class HomeController implements Initializable {
     private Button playPauseButton;
 
 
-    @FXML
-    private Slider volumeSlider;
-
-
-    private XYChart.Series<String, Number> topSeries = new XYChart.Series<>();
-    private XYChart.Series<String, Number> bottomSeries = new XYChart.Series<>();
-
     public HomeController(AudioSliderService audioSliderService, PlayListModel playListModel) {
         this.audioSliderService = audioSliderService;
         this.playListModel = playListModel;
-    }
 
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -89,10 +70,12 @@ public class HomeController implements Initializable {
     }
 
     public void init() {
+
+
         audioTimeListener = e -> audioSliderService.displayTime(audioTimeSlider, mediaPlayer, durationLabel);
         initPlayList();
-        initAudioBarChart();
         initMedia(playList.get(0).toURI().toString());
+
 
         initFileListView();
 
@@ -100,7 +83,6 @@ public class HomeController implements Initializable {
         mediaPlayer.play();
 
     }
-
 
     public void initPlayList() {
 
@@ -122,7 +104,6 @@ public class HomeController implements Initializable {
         mediaPlayer.currentTimeProperty()
                 .addListener(audioTimeListener);
 
-        mediaPlayer.setAudioSpectrumListener(spectrumListener);
 
         mediaPlayer.setOnEndOfMedia(this::nextSong);
 
@@ -130,43 +111,6 @@ public class HomeController implements Initializable {
 
     }
 
-
-    private void displayAudio(double timestamps, double duration, float[] magnitudes, float[] phases) {
-
-        mediaPlayer.setAudioSpectrumListener(null);
-
-        topSeries.getData().clear();
-
-        bottomSeries.getData().clear();
-
-        /*
-         * Ajoute les magnitudes (taille 128) au diagramme -60 est la valeur minimale de
-         * la magnitude
-         */
-        for (int i = 0; i < magnitudes.length; i++) {
-
-            /* Partie haute positive */
-            topSeries.getData().add(new XYChart.Data<>(String.valueOf(i), magnitudes[i] + 60));
-
-            /* Partie basse négative */
-            bottomSeries.getData()
-                    .add(new XYChart.Data<>(String.valueOf(i), -(magnitudes[i] + 60)));
-
-        }
-
-        mediaPlayer.setAudioSpectrumListener(spectrumListener);
-
-    }
-
-    private void initAudioBarChart() {
-
-        audioBarChart.getYAxis().setAutoRanging(false);
-
-        audioBarChart.getData().add(topSeries);
-        audioBarChart.getData().add(bottomSeries);
-
-
-    }
 
     private void initFileListView() {
 
@@ -196,7 +140,6 @@ public class HomeController implements Initializable {
         hideThumb();
 
     }
-
 
     @FXML
     private void removeAudioTimeListener() {
@@ -248,7 +191,6 @@ public class HomeController implements Initializable {
         mediaPlayer.play();
 
     }
-
 
     public void playPause() {
 
@@ -335,8 +277,6 @@ public class HomeController implements Initializable {
         audioTimeSlider.getTooltip().show(audioTimeSlider, mousePos.getX(), mousePos.getY() + 20);
 
     }
-
-    private AudioSpectrumListener spectrumListener = HomeController.this::displayAudio;
 
 
 }

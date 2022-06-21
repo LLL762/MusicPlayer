@@ -51,7 +51,7 @@
                                                 <Button mnemonicParsing="false" onAction="#nextSong" text="Next" />
                                                 <Button mnemonicParsing="false" onAction="#playRandom" text="Random" />
                                                 <Button mnemonicParsing="false" text="Mute" />
-                                                <Label fx:id="durationLabel" prefHeight="27.0" prefWidth="60.0" />
+                                    <fx:include source="duration-label.fxml" />
                                             </children>
                                         </HBox>
                                     </children>

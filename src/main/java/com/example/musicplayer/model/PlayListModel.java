@@ -1,5 +1,7 @@
 package com.example.musicplayer.model;
 
+import com.example.musicplayer.controller.HomeController;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +23,7 @@ public class PlayListModel {
     private List<File> playList = new LinkedList<>();
 
 
-    private MediaPlayer currentMediaPlayer;
+    private MediaPlayer currentMediaPlayer = new MediaPlayer(new Media(HomeController.class.getResource("/songs/lofi-study-112191.mp3").toExternalForm()));
 
 
     public PlayListModel() {

@@ -61,7 +61,6 @@ public class HelloApplication extends Application {
 
         homeController.init();
 
-        System.out.println(playListModel.getObserver());
 
         scene.getStylesheets().add(HelloApplication.class.getResource("/style/home.css").toExternalForm());
         stage.setTitle("Hello!");
