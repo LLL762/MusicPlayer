@@ -1,14 +1,15 @@
 package com.example.musicplayer.service;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaPlayer;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 public class AudioSliderServiceImpl implements AudioSliderService {
+
 
 	private final DecimalFormat formatter = new DecimalFormat("##0.00");
 	private final DecimalFormatSymbols dfSymbols = new DecimalFormatSymbols();
@@ -49,10 +50,10 @@ public class AudioSliderServiceImpl implements AudioSliderService {
 
 		final String progress = String.valueOf(audioTimeSlider.getValue() * 100 / audioTimeSlider.getMax());
 
-		audioTimeSlider	.lookup(".track")
-						.setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
-								+ progress
-								+ "%);");
+		audioTimeSlider.lookup(".track")
+				.setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
+						+ progress
+						+ "%);");
 
 	}
 
