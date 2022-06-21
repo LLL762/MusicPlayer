@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.ComboBox?>
+<ComboBox xmlns:fx="http://javafx.com/fxml/1" fx:id="speedComboBox"
+          onAction="#changeSpeed" prefWidth="150.0"
+          xmlns="http://javafx.com/javafx/18"
+          fx:controller="com.example.musicplayer.controller.SpeedController"
+/>

@@ -1,7 +1,7 @@
 package com.example.musicplayer.controller;
 
 import com.example.musicplayer.component.AudioSliderBuilder;
-import com.example.musicplayer.component.SpeedComboBuilder;
+import com.example.musicplayer.model.PlayListModel;
 import com.example.musicplayer.service.AudioSliderService;
 import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
@@ -26,21 +26,30 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static com.example.musicplayer.component.SliderDecorator.setUp;
 import static java.util.Collections.addAll;
 
 
 @Getter
 public class HomeController implements Initializable {
 
-    private final MediaPlayerInfoDisplay mpInfoDisplay;
+
     private final AudioSliderService audioSliderService;
     private List<File> playList = new ArrayList<>();
     private File playListDirectory;
     private Status mediaStatus = Status.UNKNOWN;
     private InvalidationListener audioTimeListener;
 
+
+    private PlayListModel playListModel;
+
     private MediaPlayer mediaPlayer;
+
+    @FXML
+    private VolumeController volumeController;
+
+
+    @FXML
+    private AudioTimeSliderController audioTimeSliderController;
     @FXML
     private Label songNameLabel;
 
@@ -51,56 +60,49 @@ public class HomeController implements Initializable {
 
     @FXML
     private BarChart<String, Number> audioBarChart;
-    @FXML
-    private Slider volumeSlider;
+
 
     @FXML
     private ListView<String> fileListView;
 
     @FXML
     private Button playPauseButton;
+
+
     @FXML
-    private ComboBox<String> speedComboBox;
+    private Slider volumeSlider;
 
 
     private XYChart.Series<String, Number> topSeries = new XYChart.Series<>();
     private XYChart.Series<String, Number> bottomSeries = new XYChart.Series<>();
 
-    public HomeController(final AudioSliderService audioSliderService, final MediaPlayerInfoDisplay infoDisplay) {
-        super();
+    public HomeController(AudioSliderService audioSliderService, PlayListModel playListModel) {
         this.audioSliderService = audioSliderService;
-        this.mpInfoDisplay = infoDisplay;
-        audioTimeListener = e -> audioSliderService.displayTime(audioTimeSlider, mediaPlayer, durationLabel);
+        this.playListModel = playListModel;
     }
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        init();
 
     }
 
     public void init() {
-
+        audioTimeListener = e -> audioSliderService.displayTime(audioTimeSlider, mediaPlayer, durationLabel);
         initPlayList();
         initAudioBarChart();
         initMedia(playList.get(0).toURI().toString());
-        initVolumeSlider();
-        initSpeedComboBox();
+
         initFileListView();
-        initSpeedComboBox();
+
 
         mediaPlayer.play();
 
     }
 
-    private void initSpeedComboBox() {
 
-        SpeedComboBuilder.build(speedComboBox);
-
-    }
-
-    private void initPlayList() {
+    public void initPlayList() {
 
         final String pathname = HomeController.class.getResource("/songs").toExternalForm();
 
@@ -124,7 +126,10 @@ public class HomeController implements Initializable {
 
         mediaPlayer.setOnEndOfMedia(this::nextSong);
 
+        playListModel.setCurrentMediaPlayer(mediaPlayer);
+
     }
+
 
     private void displayAudio(double timestamps, double duration, float[] magnitudes, float[] phases) {
 
@@ -192,19 +197,6 @@ public class HomeController implements Initializable {
 
     }
 
-    private void initVolumeSlider() {
-
-        setUp(volumeSlider, 0, 1, 1);
-
-        volumeSlider.valueProperty().addListener(e -> changeAudioVolume());
-
-    }
-
-    private void changeAudioVolume() {
-
-        mediaPlayer.setVolume(volumeSlider.getValue());
-
-    }
 
     @FXML
     private void removeAudioTimeListener() {
@@ -250,19 +242,13 @@ public class HomeController implements Initializable {
         initMedia(HomeController.class.getResource("/songs").toExternalForm() + "/" + fileName);
 
         songNameLabel.setText(fileName);
-        changeAudioVolume();
-        changeSpeed();
+
+        playListModel.setCurrentMediaPlayer(mediaPlayer);
 
         mediaPlayer.play();
 
     }
 
-    @FXML
-    private void changeSpeed() {
-
-        mediaPlayer.setRate(Double.parseDouble(speedComboBox.getValue().substring(1)));
-
-    }
 
     public void playPause() {
 
@@ -281,7 +267,7 @@ public class HomeController implements Initializable {
         playPauseButton.getStyleClass().add("play-button");
         mediaPlayer.play();
 
-    }    private AudioSpectrumListener spectrumListener = HomeController.this::displayAudio;
+    }
 
     public void reset() {
 
@@ -350,7 +336,7 @@ public class HomeController implements Initializable {
 
     }
 
-
+    private AudioSpectrumListener spectrumListener = HomeController.this::displayAudio;
 
 
 }

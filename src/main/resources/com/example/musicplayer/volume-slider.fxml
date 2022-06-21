@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Slider?>
+
+
+<Slider fx:id="volumeSlider" max="1.0" orientation="VERTICAL" prefHeight="98.0" prefWidth="36.0" value="1.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.musicplayer.controller.VolumeController" />
