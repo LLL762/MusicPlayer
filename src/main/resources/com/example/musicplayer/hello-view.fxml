@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -68,13 +67,9 @@
                             </children>
                         </Pane>
                         <VBox prefHeight="200.0" prefWidth="127.0">
-                            <children>
-                                <ListView fx:id="fileListView" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 1;">
-                                    <opaqueInsets>
-                                        <Insets />
-                                    </opaqueInsets>
-                                </ListView>
-                            </children>
+                     <children>
+                        <fx:include source="list-view.fxml" />
+                     </children>
                         </VBox>
                     </items>
                 </SplitPane>

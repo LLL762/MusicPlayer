@@ -12,5 +12,4 @@ module com.example.musicplayer {
 
 	opens com.example.musicplayer.controller to javafx.fxml;
 
-	exports com.example.musicplayer.service;
 }

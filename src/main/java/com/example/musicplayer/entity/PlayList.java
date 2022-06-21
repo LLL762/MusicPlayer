@@ -1,0 +1,18 @@
+package com.example.musicplayer.entity;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PlayList {
+
+	private List<File> songList = new LinkedList<>();
+
+}
