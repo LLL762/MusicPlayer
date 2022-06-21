@@ -1,20 +1,6 @@
 package com.example.musicplayer.controller;
 
-import com.example.musicplayer.component.AudioSliderBuilder;
-import com.example.musicplayer.model.PlayListModel;
-import com.example.musicplayer.service.AudioSliderService;
-import javafx.beans.InvalidationListener;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Point2D;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
-import javafx.stage.FileChooser;
-import javafx.util.Duration;
-import lombok.Getter;
+import static java.util.Collections.addAll;
 
 import java.io.File;
 import java.net.URL;
@@ -23,260 +9,265 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static java.util.Collections.addAll;
+import com.example.musicplayer.component.AudioSliderBuilder;
+import com.example.musicplayer.model.PlayListModel;
+import com.example.musicplayer.service.AudioSliderService;
 
+import javafx.beans.InvalidationListener;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
+import javafx.stage.FileChooser;
+import javafx.util.Duration;
+import lombok.Getter;
 
 @Getter
 public class HomeController implements Initializable {
 
+	private final AudioSliderService audioSliderService;
+	private List<File> playList = new ArrayList<>();
+	private File playListDirectory;
+	private Status mediaStatus = Status.UNKNOWN;
+	private InvalidationListener audioTimeListener;
 
-    private final AudioSliderService audioSliderService;
-    private List<File> playList = new ArrayList<>();
-    private File playListDirectory;
-    private Status mediaStatus = Status.UNKNOWN;
-    private InvalidationListener audioTimeListener;
+	private PlayListModel playListModel;
 
+	private MediaPlayer mediaPlayer;
 
-    private PlayListModel playListModel;
+	@FXML
+	private Label songNameLabel;
 
-    private MediaPlayer mediaPlayer;
+	@FXML
+	private Slider audioTimeSlider;
 
-    @FXML
-    private Label songNameLabel;
+	@FXML
+	private ListView<String> fileListView;
 
-    @FXML
-    private Label durationLabel;
-    @FXML
-    private Slider audioTimeSlider;
+	@FXML
+	private Button playPauseButton;
 
+	public HomeController(AudioSliderService audioSliderService, PlayListModel playListModel) {
+		this.audioSliderService = audioSliderService;
+		this.playListModel = playListModel;
 
-    @FXML
-    private ListView<String> fileListView;
+	}
 
-    @FXML
-    private Button playPauseButton;
+	@Override
+	public void initialize(URL url, ResourceBundle resourceBundle) {
 
+	}
 
-    public HomeController(AudioSliderService audioSliderService, PlayListModel playListModel) {
-        this.audioSliderService = audioSliderService;
-        this.playListModel = playListModel;
+	public void init() {
 
-    }
+		audioTimeListener = e -> audioSliderService.displayTime(audioTimeSlider, mediaPlayer);
+		initPlayList();
+		initMedia(playList.get(0).toURI().toString());
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+		initFileListView();
 
+		mediaPlayer.play();
 
-    }
+	}
 
-    public void init() {
+	public void initPlayList() {
 
+		final String pathname = HomeController.class.getResource("/songs").toExternalForm();
 
-        audioTimeListener = e -> audioSliderService.displayTime(audioTimeSlider, mediaPlayer, durationLabel);
-        initPlayList();
-        initMedia(playList.get(0).toURI().toString());
+		playListDirectory = new File(
+				String.valueOf(pathname).substring(6));
 
+		addAll(playList, Objects.requireNonNull(playListDirectory.listFiles()));
 
-        initFileListView();
+	}
 
+	private void initMedia(String path) {
 
-        mediaPlayer.play();
+		mediaPlayer = new MediaPlayer(new Media(path));
 
-    }
+		mediaPlayer.setOnReady(this::initAudioTimeSlider);
 
-    public void initPlayList() {
+		mediaPlayer	.currentTimeProperty()
+					.addListener(audioTimeListener);
 
-        final String pathname = HomeController.class.getResource("/songs").toExternalForm();
+		mediaPlayer.setOnEndOfMedia(this::nextSong);
 
-        playListDirectory = new File(
-                String.valueOf(pathname).substring(6));
+		playListModel.setCurrentMediaPlayer(mediaPlayer);
 
-        addAll(playList, Objects.requireNonNull(playListDirectory.listFiles()));
+	}
 
-    }
+	private void initFileListView() {
 
-    private void initMedia(String path) {
+		final MultipleSelectionModel<String> selectionModel;
 
-        mediaPlayer = new MediaPlayer(new Media(path));
+		fileListView.getItems().addAll(
+				playList.stream()
+						.map(File::getName)
+						.toList());
 
-        mediaPlayer.setOnReady(this::initAudioTimeSlider);
+		fileListView.getSelectionModel().selectFirst();
+		songNameLabel.setText(fileListView.getSelectionModel().getSelectedItem());
 
-        mediaPlayer.currentTimeProperty()
-                .addListener(audioTimeListener);
+		selectionModel = fileListView.getSelectionModel();
+		selectionModel	.selectedIndexProperty()
+						.addListener(observable -> setPlayListItem(selectionModel.getSelectedItem()));
 
+	}
 
-        mediaPlayer.setOnEndOfMedia(this::nextSong);
+	private void initAudioTimeSlider() {
 
-        playListModel.setCurrentMediaPlayer(mediaPlayer);
+		AudioSliderBuilder.build(audioTimeSlider, 0, mediaPlayer.getTotalDuration().toMinutes(),
+				mediaPlayer.getCurrentTime().toMinutes());
 
-    }
+		audioTimeSlider.valueProperty().addListener(obs -> audioSliderService.showProgress(audioTimeSlider));
 
+		hideThumb();
 
-    private void initFileListView() {
+	}
 
-        final MultipleSelectionModel<String> selectionModel;
+	@FXML
+	private void removeAudioTimeListener() {
 
-        fileListView.getItems().addAll(
-                playList.stream()
-                        .map(File::getName)
-                        .toList());
+		if (mediaStatus == Status.UNKNOWN) {
+			mediaStatus = mediaPlayer.getStatus();
 
-        fileListView.getSelectionModel().selectFirst();
-        songNameLabel.setText(fileListView.getSelectionModel().getSelectedItem());
+			// Solve problem when user types fast or use mouse and keyboard at the same time
+			// without throwing NPE, wrapping mediaStatus into an optional may be better.
+		}
 
-        selectionModel = fileListView.getSelectionModel();
-        selectionModel.selectedIndexProperty()
-                .addListener(observable -> setPlayListItem(selectionModel.getSelectedItem()));
+		mediaPlayer.pause();
 
-    }
+		mediaPlayer.currentTimeProperty().removeListener(audioTimeListener);
+	}
 
-    private void initAudioTimeSlider() {
+	@FXML
+	private void setMediaCurrentTime() {
 
-        AudioSliderBuilder.build(audioTimeSlider, 0, mediaPlayer.getTotalDuration().toMinutes(),
-                mediaPlayer.getCurrentTime().toMinutes());
+		mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
 
-        audioTimeSlider.valueProperty().addListener(obs -> audioSliderService.showProgress(audioTimeSlider));
+		mediaPlayer.currentTimeProperty().addListener(audioTimeListener);
 
-        hideThumb();
+		if (mediaStatus.equals(Status.PLAYING)) {
 
-    }
+			mediaPlayer.play();
+			mediaStatus = Status.UNKNOWN;
 
-    @FXML
-    private void removeAudioTimeListener() {
+		}
 
-        if (mediaStatus == Status.UNKNOWN) {
-            mediaStatus = mediaPlayer.getStatus();
+	}
 
-            // Solve problem when user types fast or use mouse and keyboard at the same time
-            // without throwing NPE, wrapping mediaStatus into an optional may be better.
-        }
+	private void setPlayListItem(final String item) {
 
-        mediaPlayer.pause();
+		final String fileName = playList.stream()
+										.filter(v -> v.getName().equals(item))
+										.findFirst()
+										.orElseThrow()
+										.getName();
 
-        mediaPlayer.currentTimeProperty().removeListener(audioTimeListener);
-    }
+		mediaPlayer.stop();
 
-    @FXML
-    private void setMediaCurrentTime() {
+		initMedia(HomeController.class.getResource("/songs").toExternalForm() + "/" + fileName);
 
-        mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
+		songNameLabel.setText(fileName);
 
-        mediaPlayer.currentTimeProperty().addListener(audioTimeListener);
+		playListModel.setCurrentMediaPlayer(mediaPlayer);
 
-        if (mediaStatus.equals(Status.PLAYING)) {
+		mediaPlayer.play();
 
-            mediaPlayer.play();
-            mediaStatus = Status.UNKNOWN;
+	}
 
-        }
+	public void playPause() {
 
-    }
+		final MediaPlayer.Status status = mediaPlayer.getStatus();
 
-    private void setPlayListItem(final String item) {
+		if (status.equals(MediaPlayer.Status.PLAYING)) {
 
-        final String fileName = playList.stream()
-                .filter(v -> v.getName().equals(item))
-                .findFirst()
-                .orElseThrow()
-                .getName();
+			playPauseButton.getStyleClass().removeAll("play-button");
+			playPauseButton.getStyleClass().add("pause-button");
 
-        mediaPlayer.stop();
+			mediaPlayer.pause();
+			return;
+		}
 
-        initMedia(HomeController.class.getResource("/songs").toExternalForm() + "/" + fileName);
+		playPauseButton.getStyleClass().removeAll("pause-button");
+		playPauseButton.getStyleClass().add("play-button");
+		mediaPlayer.play();
 
-        songNameLabel.setText(fileName);
+	}
 
-        playListModel.setCurrentMediaPlayer(mediaPlayer);
+	public void reset() {
 
-        mediaPlayer.play();
+		mediaPlayer.seek(Duration.ZERO);
+	}
 
-    }
+	public void previousSong() {
 
-    public void playPause() {
+		final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
 
-        final MediaPlayer.Status status = mediaPlayer.getStatus();
+		if (currentIndex <= 0) {
 
-        if (status.equals(MediaPlayer.Status.PLAYING)) {
+			fileListView.getSelectionModel().selectLast();
+			return;
 
-            playPauseButton.getStyleClass().removeAll("play-button");
-            playPauseButton.getStyleClass().add("pause-button");
+		}
 
-            mediaPlayer.pause();
-            return;
-        }
+		fileListView.getSelectionModel().selectPrevious();
 
-        playPauseButton.getStyleClass().removeAll("pause-button");
-        playPauseButton.getStyleClass().add("play-button");
-        mediaPlayer.play();
+	}
 
-    }
+	public void nextSong() {
 
-    public void reset() {
+		final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
 
-        mediaPlayer.seek(Duration.ZERO);
-    }
+		if (currentIndex >= fileListView.getItems().size() - 1) {
 
-    public void previousSong() {
+			fileListView.getSelectionModel().selectFirst();
+			return;
 
-        final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
+		}
 
-        if (currentIndex <= 0) {
+		fileListView.getSelectionModel().selectNext();
 
-            fileListView.getSelectionModel().selectLast();
-            return;
+	}
 
-        }
+	public void playRandom() {
 
-        fileListView.getSelectionModel().selectPrevious();
+	}
 
-    }
+	public void openFileChooser() {
+		final FileChooser fileChooser = new FileChooser();
 
-    public void nextSong() {
+		File file = fileChooser.showOpenDialog(songNameLabel.getScene().getWindow());
 
-        final int currentIndex = fileListView.getSelectionModel().getSelectedIndex();
+	}
 
-        if (currentIndex >= fileListView.getItems().size() - 1) {
+	public void showThumb() {
 
-            fileListView.getSelectionModel().selectFirst();
-            return;
+		audioSliderService.showThumb(audioTimeSlider);
 
-        }
+	}
 
-        fileListView.getSelectionModel().selectNext();
+	public void hideThumb() {
 
-    }
+		audioSliderService.hideThumb(audioTimeSlider);
+		audioTimeSlider.getTooltip().hide();
 
-    public void playRandom() {
+	}
 
-    }
+	@FXML
+	private void updateTooltip(MouseEvent e) {
 
-    public void openFileChooser() {
-        final FileChooser fileChooser = new FileChooser();
+		final Point2D mousePos = audioTimeSlider.localToScreen(e.getX(), e.getY());
+		audioTimeSlider.getTooltip().show(audioTimeSlider, mousePos.getX(), mousePos.getY() + 20);
 
-        File file = fileChooser.showOpenDialog(songNameLabel.getScene().getWindow());
-
-    }
-
-    public void showThumb() {
-
-        audioSliderService.showThumb(audioTimeSlider);
-
-    }
-
-    public void hideThumb() {
-
-        audioSliderService.hideThumb(audioTimeSlider);
-        audioTimeSlider.getTooltip().hide();
-
-    }
-
-    @FXML
-    private void updateTooltip(MouseEvent e) {
-
-        final Point2D mousePos = audioTimeSlider.localToScreen(e.getX(), e.getY());
-        audioTimeSlider.getTooltip().show(audioTimeSlider, mousePos.getX(), mousePos.getY() + 20);
-
-    }
-
+	}
 
 }

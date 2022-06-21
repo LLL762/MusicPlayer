@@ -38,7 +38,6 @@
                                                 <Tooltip text="Empty Tooltip" />
                                             </tooltip>
                                         </Slider>
-                                        <fx:include fx:id="sl" source="audio-time-slider.fxml" />
                                         <HBox prefHeight="38.0" prefWidth="368.0">
                                             <children>
                                                 <Button fx:id="playPauseButton" mnemonicParsing="false" onAction="#playPause" text="Play" />
