@@ -9,20 +9,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import com.example.musicplayer.component.AudioSliderBuilder;
 import com.example.musicplayer.model.PlayListModel;
-import com.example.musicplayer.service.AudioSliderService;
 
 import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
@@ -33,7 +28,6 @@ import lombok.Getter;
 @Getter
 public class HomeController implements Initializable {
 
-	private final AudioSliderService audioSliderService;
 	private List<File> playList = new ArrayList<>();
 	private File playListDirectory;
 	private Status mediaStatus = Status.UNKNOWN;
@@ -47,16 +41,13 @@ public class HomeController implements Initializable {
 	private Label songNameLabel;
 
 	@FXML
-	private Slider audioTimeSlider;
-
-	@FXML
 	private ListView<String> fileListView;
 
 	@FXML
 	private Button playPauseButton;
 
-	public HomeController(AudioSliderService audioSliderService, PlayListModel playListModel) {
-		this.audioSliderService = audioSliderService;
+	public HomeController(PlayListModel playListModel) {
+
 		this.playListModel = playListModel;
 
 	}
@@ -68,7 +59,6 @@ public class HomeController implements Initializable {
 
 	public void init() {
 
-		audioTimeListener = e -> audioSliderService.displayTime(audioTimeSlider, mediaPlayer);
 		initPlayList();
 		initMedia(playList.get(0).toURI().toString());
 
@@ -93,11 +83,6 @@ public class HomeController implements Initializable {
 
 		mediaPlayer = new MediaPlayer(new Media(path));
 
-		mediaPlayer.setOnReady(this::initAudioTimeSlider);
-
-		mediaPlayer	.currentTimeProperty()
-					.addListener(audioTimeListener);
-
 		mediaPlayer.setOnEndOfMedia(this::nextSong);
 
 		playListModel.setCurrentMediaPlayer(mediaPlayer);
@@ -119,48 +104,6 @@ public class HomeController implements Initializable {
 		selectionModel = fileListView.getSelectionModel();
 		selectionModel	.selectedIndexProperty()
 						.addListener(observable -> setPlayListItem(selectionModel.getSelectedItem()));
-
-	}
-
-	private void initAudioTimeSlider() {
-
-		AudioSliderBuilder.build(audioTimeSlider, 0, mediaPlayer.getTotalDuration().toMinutes(),
-				mediaPlayer.getCurrentTime().toMinutes());
-
-		audioTimeSlider.valueProperty().addListener(obs -> audioSliderService.showProgress(audioTimeSlider));
-
-		hideThumb();
-
-	}
-
-	@FXML
-	private void removeAudioTimeListener() {
-
-		if (mediaStatus == Status.UNKNOWN) {
-			mediaStatus = mediaPlayer.getStatus();
-
-			// Solve problem when user types fast or use mouse and keyboard at the same time
-			// without throwing NPE, wrapping mediaStatus into an optional may be better.
-		}
-
-		mediaPlayer.pause();
-
-		mediaPlayer.currentTimeProperty().removeListener(audioTimeListener);
-	}
-
-	@FXML
-	private void setMediaCurrentTime() {
-
-		mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
-
-		mediaPlayer.currentTimeProperty().addListener(audioTimeListener);
-
-		if (mediaStatus.equals(Status.PLAYING)) {
-
-			mediaPlayer.play();
-			mediaStatus = Status.UNKNOWN;
-
-		}
 
 	}
 
@@ -246,27 +189,6 @@ public class HomeController implements Initializable {
 		final FileChooser fileChooser = new FileChooser();
 
 		File file = fileChooser.showOpenDialog(songNameLabel.getScene().getWindow());
-
-	}
-
-	public void showThumb() {
-
-		audioSliderService.showThumb(audioTimeSlider);
-
-	}
-
-	public void hideThumb() {
-
-		audioSliderService.hideThumb(audioTimeSlider);
-		audioTimeSlider.getTooltip().hide();
-
-	}
-
-	@FXML
-	private void updateTooltip(MouseEvent e) {
-
-		final Point2D mousePos = audioTimeSlider.localToScreen(e.getX(), e.getY());
-		audioTimeSlider.getTooltip().show(audioTimeSlider, mousePos.getX(), mousePos.getY() + 20);
 
 	}
 

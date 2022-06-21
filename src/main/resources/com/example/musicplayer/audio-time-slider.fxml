@@ -4,11 +4,20 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tooltip?>
 
-<Slider fx:id="sl" onKeyPressed="#removeAudioTimeListener" onKeyReleased="#setMediaCurrentTime" onMouseDragEntered="#showThumb" onMouseDragExited="#hideThumb" onMouseEntered="#showThumb" onMouseExited="#hideThumb" onMouseMoved="#updateTooltip" onMousePressed="#removeAudioTimeListener" onMouseReleased="#setMediaCurrentTime" pickOnBounds="false" prefHeight="56.0" prefWidth="368.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.musicplayer.controller.AudioTimeSliderController">
-   <cursor>
-      <Cursor fx:constant="HAND" />
-   </cursor>
-   <tooltip>
-      <Tooltip text="Empty Tooltip" />
-   </tooltip>
+<Slider fx:id="audioTimeSlider"
+	fx:controller="com.example.musicplayer.controller.AudioTimeSliderController"
+	onKeyPressed="#removeAudioTimeListener"
+	onKeyReleased="#setMediaCurrentTime" onMouseDragEntered="#showThumb"
+	onMouseDragExited="#hideThumb" onMouseEntered="#showThumb"
+	onMouseExited="#hideThumb" onMouseMoved="#updateTooltip"
+	onMousePressed="#removeAudioTimeListener"
+	onMouseReleased="#setMediaCurrentTime" pickOnBounds="false"
+	prefHeight="54.0" prefWidth="368.0" xmlns="http://javafx.com/javafx/18"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<cursor>
+		<Cursor fx:constant="HAND" />
+	</cursor>
+	<tooltip>
+		<Tooltip text="Empty Tooltip" />
+	</tooltip>
 </Slider>

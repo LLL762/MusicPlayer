@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.example.musicplayer.controller.HomeController;
 import com.example.musicplayer.model.PlayListModel;
-import com.example.musicplayer.service.AudioSliderServiceImpl;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,10 +24,6 @@ public class HelloApplication extends Application {
 		PlayListModel playListModel = new PlayListModel();
 
 		fxmlLoader.setControllerFactory(e -> {
-
-			if (e == HomeController.class) {
-				return new HomeController(new AudioSliderServiceImpl(), playListModel);
-			}
 
 			Constructor<?> cons;
 			try {
