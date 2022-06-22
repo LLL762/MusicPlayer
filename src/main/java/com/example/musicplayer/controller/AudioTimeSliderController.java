@@ -83,7 +83,7 @@ public class AudioTimeSliderController implements PropertyChangeListener, Initia
     }
 
     @FXML
-    private void removeAudioTimeListener(MouseEvent event) {
+    private void removeAudioTimeListener() {
 
         if (mediaStatus == Status.UNKNOWN) {
             mediaStatus = mediaPlayer.getStatus();
@@ -99,7 +99,7 @@ public class AudioTimeSliderController implements PropertyChangeListener, Initia
     }
 
     @FXML
-    private void setMediaCurrentTime(MouseEvent event) {
+    private void setMediaCurrentTime() {
 
         mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
 
