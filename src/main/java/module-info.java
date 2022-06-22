@@ -1,15 +1,17 @@
 module com.example.musicplayer {
-	requires transitive javafx.controls;
-	requires javafx.fxml;
-	requires transitive javafx.media;
-	requires javafx.graphics;
+    requires transitive javafx.controls;
+    requires javafx.fxml;
+    requires transitive javafx.media;
+    requires javafx.graphics;
+    requires static lombok;
+    requires transitive java.desktop;
 
-	opens com.example.musicplayer to javafx.fxml;
+    exports com.example.musicplayer;
+    exports com.example.musicplayer.controller;
+    exports com.example.musicplayer.model;
+    exports com.example.musicplayer.entity;
+    exports com.example.musicplayer.repo;
 
-	exports com.example.musicplayer;
-	exports com.example.musicplayer.controller;
+    opens com.example.musicplayer.controller to javafx.fxml;
 
-	opens com.example.musicplayer.controller to javafx.fxml;
-
-	exports com.example.musicplayer.service;
 }

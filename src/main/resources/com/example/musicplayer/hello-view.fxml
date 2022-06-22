@@ -1,131 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.musicplayer.controller.HomeController">
-   <content>
-      <BorderPane>
-         <center>
-            <SplitPane dividerPositions="0.7943696450428397">
-               <items>
-                  <Pane>
-                     <children>
-                        <Label fx:id="songNameLabel" alignment="CENTER" layoutX="309.0" layoutY="282.0" prefHeight="25.0" prefWidth="79.0" text="Song name" />
-                        <VBox alignment="CENTER" layoutX="394.0" layoutY="56.0" prefHeight="130.0" prefWidth="79.0">
+
+    <content>
+        <BorderPane>
+            <center>
+                <SplitPane dividerPositions="0.7943696450428397">
+                    <items>
+                        <Pane>
+                            <children>
+                                <Label fx:id="songNameLabel" alignment="CENTER" layoutX="309.0" layoutY="282.0" prefHeight="25.0" prefWidth="79.0" text="Song name" />
+                                <VBox layoutX="27.0" layoutY="39.0" prefHeight="213.0" prefWidth="378.0" spacing="5.0">
+                                    <children>
+                              <fx:include source="bar-chart.fxml" />
+                              <fx:include source="audio-time-slider.fxml" />
+                                        <HBox prefHeight="38.0" prefWidth="368.0">
+                                            <children>
+                                                <Button fx:id="playPauseButton" mnemonicParsing="false" onAction="#playPause" text="Play" />
+                                                <Button mnemonicParsing="false" onAction="#reset" text="Reset">
+                                                    <tooltip>
+                                                        <Tooltip text="78" />
+                                                    </tooltip>
+                                                </Button>
+                                                <Button mnemonicParsing="false" text="Previous" />
+                                                <Button mnemonicParsing="false" text="Next" />
+                                                <Button mnemonicParsing="false" onAction="#playRandom" text="Random" />
+                                                <Button mnemonicParsing="false" text="Mute" />
+                                    <fx:include source="duration-label.fxml" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </padding>
+                                </VBox>
+                                <VBox layoutX="470.0" layoutY="32.0" prefHeight="67.0" prefWidth="150.0" spacing="5.0">
+                                    <children>
+                              <fx:include source="speed-combo.fxml" />
+                                        <Label alignment="CENTER" prefHeight="33.0" prefWidth="141.0" text="Speed" />
+                                    </children>
+                                </VBox>
+                        <VBox layoutX="451.0" layoutY="108.0" prefHeight="138.0" prefWidth="65.0">
                            <children>
-                              <Slider fx:id="volumeSlider" blockIncrement="100.0" max="200.0" orientation="VERTICAL" prefHeight="85.0" prefWidth="24.0" value="100.0" />
-                              <Label prefHeight="25.0" prefWidth="54.0" text="Volume" />
-                           </children>
-                        </VBox>
-                        <VBox alignment="CENTER" layoutX="557.0" layoutY="154.0" prefHeight="136.0" prefWidth="66.0" />
-                        <VBox layoutX="27.0" layoutY="39.0" prefHeight="213.0" prefWidth="378.0" spacing="5.0">
-                           <children>
-                              <BarChart fx:id="audioBarChart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" prefHeight="153.0" prefWidth="229.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
-                                <xAxis>
-                                  <CategoryAxis animated="false" autoRanging="false" endMargin="4.0" side="BOTTOM" startMargin="4.0" tickLabelGap="5.0" tickLabelsVisible="false">
-                                       <tickLabelFont>
-                                          <Font size="12.0" />
-                                       </tickLabelFont>
-                                       <effect>
-                                          <Bloom />
-                                       </effect>
-                                    </CategoryAxis>
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis animated="false" lowerBound="-60.0" minorTickVisible="false" side="LEFT" tickLabelGap="5.0" tickLength="2.0" upperBound="60.0" />
-                                </yAxis>
-                              </BarChart>
-                              <Slider fx:id="audioTimeSlider" onKeyPressed="#removeAudioTimeListener" onKeyReleased="#setMediaCurrentTime" onMouseDragEntered="#showThumb" onMouseDragExited="#hideThumb" onMouseEntered="#showThumb" onMouseExited="#hideThumb" onMouseMoved="#updateTooltip" onMousePressed="#removeAudioTimeListener" onMouseReleased="#setMediaCurrentTime" pickOnBounds="false" prefHeight="88.0" prefWidth="368.0">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                                 <tooltip>
-                                    <Tooltip text="Empty Tooltip" />
-                                 </tooltip>
-                              </Slider>
-                              <HBox prefHeight="38.0" prefWidth="368.0">
+                                      <VBox alignment="CENTER" prefHeight="136.0" prefWidth="66.0">
                                  <children>
-                                    <Button fx:id="playPauseButton" mnemonicParsing="false" onAction="#playPause" text="Play" />
-                                    <Button mnemonicParsing="false" onAction="#reset" text="Reset">
-                                       <tooltip>
-                                          <Tooltip text="78" />
-                                       </tooltip>
-                                    </Button>
-                                    <Button mnemonicParsing="false" onAction="#previousSong" text="Previous" />
-                                    <Button mnemonicParsing="false" onAction="#nextSong" text="Next" />
-                                    <Button mnemonicParsing="false" onAction="#playRandom" text="Random" />
-                                    <Button mnemonicParsing="false" text="Mute" />
-                                    <Label fx:id="durationLabel" prefHeight="27.0" prefWidth="60.0" />
+                                    <fx:include fx:id="volumeSlider" source="volume-slider.fxml" />
+                                    <Label text="Volume" />
                                  </children>
-                              </HBox>
-                           </children>
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding>
-                        </VBox>
-                        <VBox layoutX="462.0" layoutY="56.0" spacing="5.0">
-                           <children>
-                              <Label alignment="CENTER" prefHeight="33.0" prefWidth="141.0" text="Speed" />
-                              <ComboBox fx:id="speedComboBox" onAction="#changeSpeed" prefWidth="150.0" />
+                              </VBox>
                            </children>
                         </VBox>
-                     </children>
-                  </Pane>
-                  <VBox prefHeight="200.0" prefWidth="127.0">
+                            </children>
+                        </Pane>
+                        <VBox prefHeight="200.0" prefWidth="127.0">
                      <children>
-                        <ListView fx:id="fileListView" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 1;">
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </ListView>
+                        <fx:include source="list-view.fxml" />
                      </children>
-                  </VBox>
-               </items>
-            </SplitPane>
-         </center>
-         <top>
-            <MenuBar prefHeight="25.0" prefWidth="819.0" BorderPane.alignment="CENTER">
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                        <MenuItem mnemonicParsing="false" onAction="#openFileChooser" text="open" />
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-         </top>
-      </BorderPane>
-   </content>
+                        </VBox>
+                    </items>
+                </SplitPane>
+            </center>
+            <top>
+                <MenuBar prefHeight="25.0" prefWidth="819.0" BorderPane.alignment="CENTER">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#openFileChooser" text="open" />
+                                <MenuItem mnemonicParsing="false" text="Close" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Edit">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Delete" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Help">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="About" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+            </top>
+        </BorderPane>
+    </content>
 </ScrollPane>
