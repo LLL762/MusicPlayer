@@ -1,18 +1,17 @@
 package com.example.musicplayer.controller;
 
+import com.example.musicplayer.model.PlayListModel;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.media.MediaPlayer;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ResourceBundle;
-
-import com.example.musicplayer.model.PlayListModel;
-
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.media.MediaPlayer;
 
 /**
  * 21/06/2022.
@@ -21,58 +20,58 @@ import javafx.scene.media.MediaPlayer;
  */
 public class DurationLabelController implements PropertyChangeListener, Initializable {
 
-	private final DecimalFormat formatter = new DecimalFormat("##0.00");
-	private final DecimalFormatSymbols dfSymbols = new DecimalFormatSymbols();
+    private final DecimalFormat formatter = new DecimalFormat("##0.00");
+    private final DecimalFormatSymbols dfSymbols = new DecimalFormatSymbols();
 
-	@FXML
-	private Label durationLabel;
+    @FXML
+    private Label durationLabel;
 
-	private PlayListModel playListModel;
+    private PlayListModel playListModel;
 
-	public DurationLabelController(PlayListModel playListModel) {
-		this.playListModel = playListModel;
-		playListModel.addPropertyChangeListener(this);
-	}
+    public DurationLabelController(PlayListModel playListModel) {
+        this.playListModel = playListModel;
+        playListModel.addPropertyChangeListener(this);
+    }
 
-	@Override
-	public void initialize(URL url, ResourceBundle resourceBundle) {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
 
-		init();
+        init();
 
-	}
+    }
 
-	public void init() {
+    public void init() {
 
-		dfSymbols.setDecimalSeparator(':');
-		formatter.setDecimalFormatSymbols(dfSymbols);
+        dfSymbols.setDecimalSeparator(':');
+        formatter.setDecimalFormatSymbols(dfSymbols);
 
-		playListModel.getCurrentMediaPlayer().currentTimeProperty().addListener(e -> displayCurrentTime());
+        playListModel.getMediaPlayer().currentTimeProperty().addListener(e -> displayCurrentTime());
 
-	}
+    }
 
-	public void displayCurrentTime() {
+    public void displayCurrentTime() {
 
-		final MediaPlayer mediaPlayer = playListModel.getCurrentMediaPlayer();
+        final MediaPlayer mediaPlayer = playListModel.getMediaPlayer();
 
-		final double minutes = mediaPlayer.getCurrentTime().toMinutes();
+        final double minutes = mediaPlayer.getCurrentTime().toMinutes();
 
-		durationLabel.setText(
-				formatter.format(minutes) + "/" + formatter.format(mediaPlayer.getTotalDuration().toMinutes()));
+        durationLabel.setText(
+                formatter.format(minutes) + "/" + formatter.format(mediaPlayer.getTotalDuration().toMinutes()));
 
-	}
+    }
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
 
-		MediaPlayer newValue;
+        MediaPlayer newValue;
 
-		if (evt.getPropertyName().equals("media-change")) {
+        if (evt.getPropertyName().equals("media-change")) {
 
-			newValue = (MediaPlayer) evt.getNewValue();
-			newValue.currentTimeProperty().addListener(e -> displayCurrentTime());
+            newValue = (MediaPlayer) evt.getNewValue();
+            newValue.currentTimeProperty().addListener(e -> displayCurrentTime());
 
-		}
+        }
 
-	}
+    }
 
 }

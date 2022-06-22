@@ -1,71 +1,84 @@
 package com.example.musicplayer.model;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.example.musicplayer.controller.HomeController;
-
+import com.example.musicplayer.entity.PlayList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class PlayListModel {
 
-	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-	private List<File> playList = new LinkedList<>();
+    private PlayList playList;
 
-	private MediaPlayer currentMediaPlayer = new MediaPlayer(
-			new Media(HomeController.class.getResource("/songs/lofi-study-112191.mp3").toExternalForm()));
 
-	public PlayListModel(List<File> playList) {
+    private int currentAudioFileIndex;
+    private MediaPlayer mediaPlayer;
 
-		this.playList = playList;
-	}
+    public PlayListModel(PlayList playList) {
+        this.playList = playList;
 
-	public void init() {
+        changeMedia(0);
+    }
 
-	}
+    public void init() {
 
-	public void addFile(String absolutePath) {
+        changeMedia(0);
 
-		final File file = new File(absolutePath);
+    }
 
-		if (!file.exists()) {
-		}
+    public void changeMedia(int index) {
 
-		playList.add(file);
+        int playListSize = playList.getAudioFileList().size();
 
-	}
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
 
-	public void addPropertyChangeListener(PropertyChangeListener pcl) {
-		pcs.addPropertyChangeListener(pcl);
-	}
 
-	public void removePropertyChangeListener(PropertyChangeListener pcl) {
-		pcs.removePropertyChangeListener(pcl);
-	}
+        if (index < 0) {
+            index = playListSize;
+        }
 
-	public PropertyChangeListener[] getObserver() {
+        if (index >= playListSize) {
+            index = 0;
+        }
 
-		return pcs.getPropertyChangeListeners();
+        currentAudioFileIndex = index;
 
-	}
+        setMediaPlayer(new MediaPlayer(new Media(playList.getAudioFileList().get(index).getPath())));
+        mediaPlayer.setOnEndOfMedia(() -> changeMedia(currentAudioFileIndex + 1));
+        mediaPlayer.play();
 
-	public void setCurrentMediaPlayer(MediaPlayer newMediaPlayer) {
+    }
 
-		pcs.firePropertyChange("media-change", this.currentMediaPlayer, newMediaPlayer);
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.addPropertyChangeListener(pcl);
+    }
 
-		this.currentMediaPlayer = newMediaPlayer;
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.removePropertyChangeListener(pcl);
+    }
 
-	}
+    public PropertyChangeListener[] getObserver() {
+
+        return pcs.getPropertyChangeListeners();
+
+    }
+
+    public void setMediaPlayer(MediaPlayer newMediaPlayer) {
+
+
+        pcs.firePropertyChange("media-change", this.mediaPlayer, newMediaPlayer);
+
+        this.mediaPlayer = newMediaPlayer;
+
+    }
 
 }

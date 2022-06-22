@@ -1,5 +1,8 @@
 package com.example.musicplayer.repo;
 
-public interface PlayListRepo extends Repo {
+import com.example.musicplayer.entity.PlayList;
+
+public interface PlayListRepo extends Repo<PlayList> {
+
 
 }

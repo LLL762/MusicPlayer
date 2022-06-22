@@ -36,8 +36,8 @@
                                                         <Tooltip text="78" />
                                                     </tooltip>
                                                 </Button>
-                                                <Button mnemonicParsing="false" onAction="#previousSong" text="Previous" />
-                                                <Button mnemonicParsing="false" onAction="#nextSong" text="Next" />
+                                                <Button mnemonicParsing="false" text="Previous" />
+                                                <Button mnemonicParsing="false" text="Next" />
                                                 <Button mnemonicParsing="false" onAction="#playRandom" text="Random" />
                                                 <Button mnemonicParsing="false" text="Mute" />
                                     <fx:include source="duration-label.fxml" />

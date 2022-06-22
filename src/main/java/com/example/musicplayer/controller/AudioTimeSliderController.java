@@ -1,13 +1,7 @@
 package com.example.musicplayer.controller;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import com.example.musicplayer.component.AudioSliderBuilder;
 import com.example.musicplayer.model.PlayListModel;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -18,6 +12,11 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 /**
  * 21/06/2022.
  *
@@ -25,137 +24,137 @@ import javafx.util.Duration;
  */
 public class AudioTimeSliderController implements PropertyChangeListener, Initializable {
 
-	private PlayListModel playListModel;
+    private PlayListModel playListModel;
 
-	private Status mediaStatus = Status.UNKNOWN;
+    private Status mediaStatus = Status.UNKNOWN;
 
-	private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
-	@FXML
-	private Slider audioTimeSlider;
+    @FXML
+    private Slider audioTimeSlider;
 
-	public AudioTimeSliderController(PlayListModel playListModel) {
-		this.playListModel = playListModel;
+    public AudioTimeSliderController(PlayListModel playListModel) {
+        this.playListModel = playListModel;
 
-		mediaPlayer = playListModel.getCurrentMediaPlayer();
-		playListModel.addPropertyChangeListener(this);
+        mediaPlayer = playListModel.getMediaPlayer();
+        playListModel.addPropertyChangeListener(this);
 
-	}
+    }
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		mediaPlayer.setOnReady(this::init);
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        mediaPlayer.setOnReady(this::init);
 
-	}
+    }
 
-	public void init() {
+    public void init() {
 
-		hideThumb(null);
 
-		setUp();
+        setUp();
 
-		audioTimeSlider.valueProperty().addListener(e -> showProgress());
+        audioTimeSlider.valueProperty().addListener(e -> showProgress());
 
-	}
+    }
 
-	public void setUp() {
+    public void setUp() {
 
-		AudioSliderBuilder.build(audioTimeSlider, 0, mediaPlayer.getTotalDuration().toMinutes(),
-				mediaPlayer.getCurrentTime().toMinutes());
+        AudioSliderBuilder.build(audioTimeSlider, 0, mediaPlayer.getTotalDuration().toMinutes(),
+                mediaPlayer.getCurrentTime().toMinutes());
 
-		playListModel.getCurrentMediaPlayer().currentTimeProperty().addListener(e -> setThumbPosition());
+        playListModel.getMediaPlayer().currentTimeProperty().addListener(e -> setThumbPosition());
 
-	}
+    }
 
-	private void setThumbPosition() {
+    private void setThumbPosition() {
 
-		audioTimeSlider.setValue(playListModel.getCurrentMediaPlayer().getCurrentTime().toMinutes());
+        audioTimeSlider.setValue(playListModel.getMediaPlayer().getCurrentTime().toMinutes());
 
-	}
+    }
 
-	private void showProgress() {
+    private void showProgress() {
 
-		final String progress = String.valueOf(audioTimeSlider.getValue() * 100 / audioTimeSlider.getMax());
+        final String progress = String.valueOf(audioTimeSlider.getValue() * 100 / audioTimeSlider.getMax());
 
-		audioTimeSlider	.lookup(".track")
-						.setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
-								+ progress
-								+ "%);");
+        audioTimeSlider.lookup(".track")
+                .setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
+                        + progress
+                        + "%);");
 
-	}
+    }
 
-	@FXML
-	private void removeAudioTimeListener(MouseEvent event) {
+    @FXML
+    private void removeAudioTimeListener(MouseEvent event) {
 
-		if (mediaStatus == Status.UNKNOWN) {
-			mediaStatus = mediaPlayer.getStatus();
+        if (mediaStatus == Status.UNKNOWN) {
+            mediaStatus = mediaPlayer.getStatus();
 
-			// Solve problem when user types fast or use mouse and keyboard at the same time
-			// without throwing NPE, wrapping mediaStatus into an optional may be better.
-		}
+            // Solve problem when user types fast or use mouse and keyboard at the same time
+            // without throwing NPE, wrapping mediaStatus into an optional may be better.
+        }
 
-		mediaPlayer.pause();
+        mediaPlayer.pause();
 
-		playListModel.getCurrentMediaPlayer().currentTimeProperty().removeListener(e -> setThumbPosition());
+        playListModel.getMediaPlayer().currentTimeProperty().removeListener(e -> setThumbPosition());
 
-	}
+    }
 
-	@FXML
-	private void setMediaCurrentTime(MouseEvent event) {
+    @FXML
+    private void setMediaCurrentTime(MouseEvent event) {
 
-		mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
+        mediaPlayer.seek(Duration.minutes(audioTimeSlider.getValue()));
 
-		mediaPlayer.currentTimeProperty().addListener(e -> setThumbPosition());
+        mediaPlayer.currentTimeProperty().addListener(e -> setThumbPosition());
 
-		if (mediaStatus.equals(Status.PLAYING)) {
+        if (mediaStatus.equals(Status.PLAYING)) {
 
-			mediaPlayer.play();
+            mediaPlayer.play();
 
-		}
-		mediaStatus = Status.UNKNOWN;
+        }
+        mediaStatus = Status.UNKNOWN;
 
-	}
+    }
 
-	@FXML
-	private void showThumb(MouseEvent event) {
+    @FXML
+    private void showThumb(MouseEvent event) {
 
-		final StackPane thumb = (StackPane) audioTimeSlider.lookup(".thumb");
+        final StackPane thumb = (StackPane) audioTimeSlider.lookup(".thumb");
 
-		thumb.setOpacity(1);
+        thumb.setOpacity(1);
 
-	}
+    }
 
-	@FXML
-	private void hideThumb(MouseEvent event) {
+    @FXML
+    private void hideThumb(MouseEvent event) {
 
-		final StackPane thumb = (StackPane) audioTimeSlider.lookup(".thumb");
-		thumb.setOpacity(0);
-		audioTimeSlider.getTooltip().hide();
+        final StackPane thumb = (StackPane) audioTimeSlider.lookup(".thumb");
+        thumb.setOpacity(0);
+        audioTimeSlider.getTooltip().hide();
 
-	}
+    }
 
-	@FXML
-	private void updateTooltip(MouseEvent e) {
+    @FXML
+    private void updateTooltip(MouseEvent e) {
 
-		final Point2D mousePos = audioTimeSlider.localToScreen(e.getX(), e.getY());
-		audioTimeSlider.getTooltip().show(audioTimeSlider, mousePos.getX(), mousePos.getY() + 20);
+        final Point2D mousePos = audioTimeSlider.localToScreen(e.getX(), e.getY());
+        audioTimeSlider.getTooltip().show(audioTimeSlider, mousePos.getX(), mousePos.getY() + 20);
 
-	}
+    }
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
 
-		MediaPlayer newValue;
+        MediaPlayer newValue;
 
-		if (evt.getPropertyName().equals("media-change")) {
 
-			newValue = (MediaPlayer) evt.getNewValue();
-			mediaPlayer = newValue;
+        if (evt.getPropertyName().equals("media-change")) {
 
-			mediaPlayer.setOnReady(this::setUp);
+            newValue = (MediaPlayer) evt.getNewValue();
+            mediaPlayer = newValue;
 
-		}
+            mediaPlayer.setOnReady(this::setUp);
 
-	}
+        }
+
+    }
 
 }

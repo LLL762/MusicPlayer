@@ -51,7 +51,7 @@ public class BarChartController implements PropertyChangeListener, Initializable
 
         playListModel.addPropertyChangeListener(this);
 
-        playListModel.getCurrentMediaPlayer()
+        playListModel.getMediaPlayer()
                 .setAudioSpectrumListener(this::displayAudio);
 
     }

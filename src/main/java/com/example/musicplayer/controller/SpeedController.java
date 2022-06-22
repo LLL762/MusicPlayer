@@ -48,7 +48,7 @@ public class SpeedController implements PropertyChangeListener, Initializable {
     @FXML
     void changeSpeed() {
 
-        playListModel.getCurrentMediaPlayer().
+        playListModel.getMediaPlayer().
                 setRate(comboValueToDouble());
 
     }

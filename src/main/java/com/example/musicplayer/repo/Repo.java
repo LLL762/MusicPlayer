@@ -1,5 +1,10 @@
 package com.example.musicplayer.repo;
 
-public interface Repo {
+import java.util.Optional;
+
+public interface Repo<T> {
+
+    Optional<T> getByName(String name);
+
 
 }

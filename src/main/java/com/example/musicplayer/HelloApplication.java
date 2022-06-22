@@ -1,53 +1,55 @@
 package com.example.musicplayer;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import com.example.musicplayer.controller.HomeController;
 import com.example.musicplayer.model.PlayListModel;
-
+import com.example.musicplayer.repo.PlayListRepoMock;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public class HelloApplication extends Application {
-	public static void main(String[] args) {
-		launch();
-	}
+    public static void main(String[] args) {
+        launch();
+    }
 
-	@Override
-	public void start(Stage stage) throws IOException {
-		FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+    @Override
+    public void start(Stage stage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
 
-		PlayListModel playListModel = new PlayListModel();
 
-		fxmlLoader.setControllerFactory(e -> {
+        PlayListRepoMock repoMock = new PlayListRepoMock();
+        PlayListModel playListModel = new PlayListModel(repoMock.getByName("Test").orElseThrow());
 
-			Constructor<?> cons;
-			try {
-				cons = e.getConstructor(PlayListModel.class);
-				return cons.newInstance(playListModel);
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException e1) {
+        fxmlLoader.setControllerFactory(e -> {
 
-				e1.printStackTrace();
-			}
+            Constructor<?> cons;
+            try {
+                cons = e.getConstructor(PlayListModel.class);
+                return cons.newInstance(playListModel);
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+                     | IllegalArgumentException | InvocationTargetException e1) {
 
-			return null;
-		});
+                e1.printStackTrace();
+            }
 
-		Scene scene = new Scene(fxmlLoader.load());
+            return null;
+        });
 
-		HomeController homeController = fxmlLoader.getController();
+        Scene scene = new Scene(fxmlLoader.load());
 
-		homeController.init();
+        HomeController homeController = fxmlLoader.getController();
 
-		scene.getStylesheets().add(HelloApplication.class.getResource("/style/home.css").toExternalForm());
-		stage.setTitle("Hello!");
-		stage.setScene(scene);
-		stage.show();
+        homeController.init();
 
-	}
+        scene.getStylesheets().add(HelloApplication.class.getResource("/style/home.css").toExternalForm());
+        stage.setTitle("Hello!");
+        stage.setScene(scene);
+        stage.show();
+
+    }
 }
