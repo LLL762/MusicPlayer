@@ -17,7 +17,6 @@ public class PlayListModel {
 
     private PlayList playList;
 
-
     private int currentAudioFileIndex;
     private MediaPlayer mediaPlayer;
 
@@ -55,6 +54,7 @@ public class PlayListModel {
         currentAudioFileIndex = index;
 
         setMediaPlayer(new MediaPlayer(new Media(playList.getAudioFileList().get(index).getPath())));
+        
         mediaPlayer.setOnEndOfMedia(() -> changeMedia(currentAudioFileIndex + 1));
         mediaPlayer.statusProperty().addListener((obs, oldStatus, newStatus) ->
                 pcs.firePropertyChange("media-status-change", oldStatus, newStatus)
@@ -84,13 +84,22 @@ public class PlayListModel {
 
     }
 
-    public void setMediaPlayer(MediaPlayer newMediaPlayer) {
+    private void setMediaPlayer(MediaPlayer newMediaPlayer) {
 
 
         pcs.firePropertyChange("media-change", this.mediaPlayer, newMediaPlayer);
-
         this.mediaPlayer = newMediaPlayer;
 
     }
+
+    private void setPlayList(PlayList playlist) {
+
+        mediaPlayer.stop();
+        pcs.firePropertyChange("play-list-change", this.playList, playlist);
+        this.playList = playlist;
+
+
+    }
+
 
 }

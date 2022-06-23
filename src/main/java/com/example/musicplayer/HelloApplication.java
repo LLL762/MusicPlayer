@@ -1,6 +1,7 @@
 package com.example.musicplayer;
 
 import com.example.musicplayer.controller.HomeController;
+import com.example.musicplayer.exception.handler.ExceptionHandler;
 import com.example.musicplayer.model.PlayListModel;
 import com.example.musicplayer.repo.PlayListRepoMock;
 import javafx.application.Application;
@@ -13,12 +14,22 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class HelloApplication extends Application {
+
+    private static final ExceptionHandler exceptionHandler = new ExceptionHandler();
+
     public static void main(String[] args) {
+
+
+        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
         launch();
+
+
     }
 
     @Override
     public void start(Stage stage) throws IOException {
+
+
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
 
 

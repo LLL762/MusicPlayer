@@ -38,4 +38,9 @@ public class PlayListRepoMock implements PlayListRepo {
     public Optional<PlayList> getByName(String name) {
         return name.equals("Test") ? Optional.of(testPlayList) : Optional.empty();
     }
+
+    @Override
+    public void save(PlayList object) {
+        System.out.println("toto");
+    }
 }

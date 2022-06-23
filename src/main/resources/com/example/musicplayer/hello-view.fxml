@@ -68,6 +68,7 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
+                        <MenuItem mnemonicParsing="false" onAction="#savePlayList" text="Save playlist" />
                                 <MenuItem mnemonicParsing="false" onAction="#openFileChooser" text="open" />
                                 <MenuItem mnemonicParsing="false" text="Close" />
                             </items>

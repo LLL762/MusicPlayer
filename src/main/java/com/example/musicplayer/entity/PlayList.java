@@ -24,6 +24,7 @@ public class PlayList {
         this.name = name;
     }
 
+
     public void addAudioFile(final AudioFile audioFile) {
 
         if (!audioFileList.contains(audioFile)) {

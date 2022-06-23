@@ -72,6 +72,13 @@ public class DurationLabelController implements PropertyChangeListener, Initiali
 
         }
 
+        if (evt.getPropertyName().equals("media-status-change") &&
+                evt.getNewValue() == MediaPlayer.Status.UNKNOWN) {
+
+            durationLabel.setText("loading");
+        }
+
+
     }
 
 }
