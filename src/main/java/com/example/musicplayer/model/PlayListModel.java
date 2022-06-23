@@ -21,15 +21,17 @@ public class PlayListModel {
     private int currentAudioFileIndex;
     private MediaPlayer mediaPlayer;
 
+
     public PlayListModel(PlayList playList) {
         this.playList = playList;
 
-        changeMedia(0);
+        init();
     }
 
     public void init() {
 
         changeMedia(0);
+        mediaPlayer.setAutoPlay(true);
 
     }
 
@@ -54,9 +56,19 @@ public class PlayListModel {
 
         setMediaPlayer(new MediaPlayer(new Media(playList.getAudioFileList().get(index).getPath())));
         mediaPlayer.setOnEndOfMedia(() -> changeMedia(currentAudioFileIndex + 1));
-        mediaPlayer.play();
+        mediaPlayer.statusProperty().addListener((obs, oldStatus, newStatus) ->
+                pcs.firePropertyChange("media-status-change", oldStatus, newStatus)
+        );
+
+
+        if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.setAutoPlay(true);
+
+        }
+
 
     }
+
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         pcs.addPropertyChangeListener(pcl);

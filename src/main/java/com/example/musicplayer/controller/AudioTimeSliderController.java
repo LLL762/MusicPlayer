@@ -1,13 +1,7 @@
 package com.example.musicplayer.controller;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import com.example.musicplayer.component.AudioSliderBuilder;
 import com.example.musicplayer.model.PlayListModel;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -16,6 +10,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * 21/06/2022.
@@ -74,10 +73,10 @@ public class AudioTimeSliderController implements PropertyChangeListener, Initia
 
 		final String progress = String.valueOf(audioTimeSlider.getValue() * 100 / audioTimeSlider.getMax());
 
-		audioTimeSlider	.lookup(".track")
-						.setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
-								+ progress
-								+ "%);");
+		audioTimeSlider.lookup(".track")
+				.setStyle("-fx-background-color: linear-gradient(to right,  red " + progress + "% ,  grey "
+						+ progress
+						+ "%);");
 
 	}
 
@@ -126,6 +125,7 @@ public class AudioTimeSliderController implements PropertyChangeListener, Initia
 
 		MediaPlayer newValue;
 
+
 		if (evt.getPropertyName().equals("media-change")) {
 
 			newValue = (MediaPlayer) evt.getNewValue();
@@ -134,6 +134,13 @@ public class AudioTimeSliderController implements PropertyChangeListener, Initia
 			mediaPlayer.setOnReady(this::setUp);
 
 		}
+
+		if (evt.getPropertyName().equals("media-status-change") &&
+				evt.getNewValue() == Status.READY) {
+
+			setUp();
+		}
+
 
 	}
 

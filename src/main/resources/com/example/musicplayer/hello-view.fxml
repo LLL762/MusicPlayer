@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -24,22 +22,13 @@
                         <Pane>
                             <children>
                                 <Label fx:id="songNameLabel" alignment="CENTER" layoutX="309.0" layoutY="282.0" prefHeight="25.0" prefWidth="79.0" text="Song name" />
-                                <VBox layoutX="27.0" layoutY="39.0" prefHeight="213.0" prefWidth="378.0" spacing="5.0">
+                                <VBox layoutX="14.0" layoutY="20.0" prefHeight="232.0" prefWidth="442.0" spacing="5.0">
                                     <children>
                               <fx:include source="bar-chart.fxml" />
                               <fx:include source="audio-time-slider.fxml" />
                                         <HBox prefHeight="38.0" prefWidth="368.0">
                                             <children>
-                                                <Button fx:id="playPauseButton" mnemonicParsing="false" onAction="#playPause" text="Play" />
-                                                <Button mnemonicParsing="false" onAction="#reset" text="Reset">
-                                                    <tooltip>
-                                                        <Tooltip text="78" />
-                                                    </tooltip>
-                                                </Button>
-                                                <Button mnemonicParsing="false" text="Previous" />
-                                                <Button mnemonicParsing="false" text="Next" />
-                                                <Button mnemonicParsing="false" onAction="#playRandom" text="Random" />
-                                                <Button mnemonicParsing="false" text="Mute" />
+                                    <fx:include source="media-button-bar.fxml" />
                                     <fx:include source="duration-label.fxml" />
                                             </children>
                                         </HBox>
