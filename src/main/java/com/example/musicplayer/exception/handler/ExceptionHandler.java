@@ -1,7 +1,9 @@
 package com.example.musicplayer.exception.handler;
 
+import java.util.Objects;
+
 import com.example.musicplayer.exception.ConfigLoadException;
-import javafx.concurrent.Task;
+
 import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,53 +14,40 @@ import lombok.Setter;
  * @author Laurent Lamiral
  */
 
-
 @Getter
 @Setter
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
+	public void handle(Throwable e) {
 
-    private Task<Void> task = new Task<>() {
-        @Override
-        protected Void call() throws Exception {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.showAndWait();
-            return null;
-        }
-    };
+		if (getRootCause(e).getClass().equals(ConfigLoadException.class)) {
 
-    @Override
-    public void uncaughtException(Thread thread, Throwable e) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setContentText(getRootCause(e).getMessage());
+			alert.showAndWait();
 
+		}
+	}
 
-//        if (e.getClass().equals(RuntimeException.class)) {
-//
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.showAndWait();
-//
-//
-//            Platform.exit();
-//
-//
-//        }
+	private Throwable getRootCause(Throwable e) {
 
-        if (e.getClass().equals(ConfigLoadException.class)) {
+		Objects.requireNonNull(e);
+		Throwable rootCause = e;
 
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            
-            return;
+		while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
 
+			rootCause = rootCause.getCause();
+		}
 
-        }
+		return rootCause;
 
+	}
 
-        e.printStackTrace();
-        System.exit(1);
+	@Override
+	public void uncaughtException(Thread t, Throwable e) {
 
+		handle(e);
 
-    }
-
+	}
 
 }

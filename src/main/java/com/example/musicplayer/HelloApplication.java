@@ -1,5 +1,9 @@
 package com.example.musicplayer;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import com.example.musicplayer.controller.HomeController;
 import com.example.musicplayer.exception.handler.ExceptionHandler;
 import com.example.musicplayer.model.PlayListModel;
@@ -7,67 +11,67 @@ import com.example.musicplayer.repo.PlayListRepo;
 import com.example.musicplayer.repo.PlayListRepoImpl;
 import com.example.musicplayer.repo.PlayListRepoMock;
 import com.example.musicplayer.service.PlayListServiceImpl;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 public class HelloApplication extends Application {
 
-    private static final ExceptionHandler exceptionHandler = new ExceptionHandler();
+//	public static void main(String[] args) {
+//
+//		try {
+//			AppConfigInstance.getInstance();
+//			launch();
+//
+//		} catch (Exception e) {
+//			ExceptionHandler handler = new ExceptionHandler();
+//			handler.handle(e);
+//
+//		}
+//
+//	}
 
-    public static void main(String[] args) {
+	@Override
+	public void start(Stage stage) throws IOException {
 
+		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 
-        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+		FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
 
-        launch();
+		final PlayListRepoMock repoMock = new PlayListRepoMock();
+		final PlayListRepo playListRepo = new PlayListRepoImpl();
+		final PlayListModel playListModel = new PlayListModel(
+				repoMock.getByName("Test").orElseThrow(),
 
+				new PlayListServiceImpl(playListRepo));
 
-    }
+		fxmlLoader.setControllerFactory(e -> {
 
-    @Override
-    public void start(Stage stage) throws IOException {
+			Constructor<?> cons;
+			try {
+				cons = e.getConstructor(PlayListModel.class);
+				return cons.newInstance(playListModel);
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException e1) {
 
+				e1.printStackTrace();
+			}
 
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+			return null;
+		});
 
+		Scene scene = new Scene(fxmlLoader.load());
 
-        final PlayListRepoMock repoMock = new PlayListRepoMock();
-        final PlayListRepo playListRepo = new PlayListRepoImpl();
-        final PlayListModel playListModel = new PlayListModel(
-                repoMock.getByName("Test").orElseThrow(),
-                new PlayListServiceImpl(playListRepo));
+		HomeController homeController = fxmlLoader.getController();
 
-        fxmlLoader.setControllerFactory(e -> {
+		homeController.init();
 
-            Constructor<?> cons;
-            try {
-                cons = e.getConstructor(PlayListModel.class);
-                return cons.newInstance(playListModel);
-            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                     | IllegalArgumentException | InvocationTargetException e1) {
+		scene.getStylesheets().add(HelloApplication.class.getResource("/style/home.css").toExternalForm());
+		stage.setTitle("Hello!");
+		stage.setScene(scene);
+		stage.show();
 
-                e1.printStackTrace();
-            }
-
-            return null;
-        });
-
-        Scene scene = new Scene(fxmlLoader.load());
-
-        HomeController homeController = fxmlLoader.getController();
-
-        homeController.init();
-
-        scene.getStylesheets().add(HelloApplication.class.getResource("/style/home.css").toExternalForm());
-        stage.setTitle("Hello!");
-        stage.setScene(scene);
-        stage.show();
-
-    }
+	}
 }
