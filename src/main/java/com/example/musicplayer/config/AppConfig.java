@@ -1,37 +1,37 @@
 package com.example.musicplayer.config;
 
+import static com.example.musicplayer.utility.ResourceUtility.getResourcePath;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.example.musicplayer.HelloApplication;
 import com.example.musicplayer.exception.ConfigLoadException;
-
-import lombok.Getter;
 
 /**
  * 24/06/2022.
  *
  * @author Laurent Lamiral
  */
-@Getter
-public class AppConfig {
+
+public enum AppConfig {
+
+	INSTANCE;
 
 	private String appPropertyPath;
 
-	private Properties propertyConfig = new Properties();
+	private final Properties propertyConfig = new Properties();
 
-	public AppConfig() {
+	AppConfig() {
 
 		init();
 
 	}
 
-	public void retry() {
+	public void refresh() {
 
-		propertyConfig = new Properties();
 		init();
 
 	}
@@ -39,7 +39,7 @@ public class AppConfig {
 	private void init() {
 
 		try {
-			appPropertyPath = HelloApplication.class.getResource("/application.properties").getPath();
+			appPropertyPath = getResourcePath("/application.properties");
 
 			try (BufferedReader reader = new BufferedReader(new FileReader(new File(appPropertyPath)));) {
 				propertyConfig.load(reader);
@@ -54,6 +54,20 @@ public class AppConfig {
 
 			throw new ConfigLoadException("Failed loading application.properties");
 		}
+
+	}
+
+	public String getProperty(final String key) {
+
+		final String value = propertyConfig.getProperty(key);
+
+		if (value == null) {
+
+			throw new ConfigLoadException(String.format("Property % not found !", key));
+
+		}
+
+		return value;
 
 	}
 

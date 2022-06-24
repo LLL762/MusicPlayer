@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.example.musicplayer.exception.ConfigLoadException;
 import com.example.musicplayer.model.PlayListModel;
 import com.example.musicplayer.utility.RandomInstance;
 
@@ -74,7 +73,6 @@ public class MediaButtonBarController implements PropertyChangeListener, Initial
 
 		final int index = RandomInstance.getRangomInt(0, playlistSize);
 		playListModel.changeMedia(index);
-		throw new ConfigLoadException("Config loading fail!");
 
 	}
 

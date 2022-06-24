@@ -1,7 +1,6 @@
 package com.example.musicplayer.repo;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -9,7 +8,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.example.musicplayer.entity.PlayList;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 /**
  * 23/06/2022.
@@ -29,10 +27,8 @@ public class PlayListRepoImpl implements PlayListRepo {
 		}
 	}
 
-	private final XmlMapper xmlMapper = new XmlMapper();
-
 	@Override
-	public Optional<PlayList> getByName(String name) throws IOException {
+	public Optional<PlayList> getByName(String name) {
 
 		final File folder = new File(FOLDER_PATH);
 
@@ -42,7 +38,7 @@ public class PlayListRepoImpl implements PlayListRepo {
 
 		if (file.isPresent()) {
 
-			return Optional.of(xmlMapper.readValue(file.get(), PlayList.class));
+//			return Optional.of(xmlMapper.readValue(file.get(), PlayList.class));
 
 		}
 
@@ -51,11 +47,11 @@ public class PlayListRepoImpl implements PlayListRepo {
 	}
 
 	@Override
-	public void save(PlayList playList) throws IOException {
+	public PlayList save(PlayList playList) {
 
-		final File file = new File(FOLDER_PATH, playList.getName() + ".xml");
+		final String path = Paths.get(FOLDER_PATH, playList.getName() + ".xml").toString();
 
-		xmlMapper.writeValue(file, playList);
+		return XmlEntityMapper.INSTANCE.write(path, playList);
 
 	}
 }

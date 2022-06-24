@@ -19,19 +19,11 @@ import javafx.stage.Stage;
 
 public class HelloApplication extends Application {
 
-//	public static void main(String[] args) {
-//
-//		try {
-//			AppConfigInstance.getInstance();
-//			launch();
-//
-//		} catch (Exception e) {
-//			ExceptionHandler handler = new ExceptionHandler();
-//			handler.handle(e);
-//
-//		}
-//
-//	}
+	public static void main(String[] args) {
+
+		launch();
+
+	}
 
 	@Override
 	public void start(Stage stage) throws IOException {

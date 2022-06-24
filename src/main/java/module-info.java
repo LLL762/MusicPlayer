@@ -5,7 +5,8 @@ module com.example.musicplayer {
 	requires javafx.graphics;
 	requires static lombok;
 	requires transitive java.desktop;
-	requires com.fasterxml.jackson.dataformat.xml;
+	requires transitive com.fasterxml.jackson.dataformat.xml;
+	requires com.fasterxml.jackson.databind;
 
 	exports com.example.musicplayer;
 	exports com.example.musicplayer.controller;
