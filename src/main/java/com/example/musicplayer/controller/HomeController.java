@@ -67,10 +67,15 @@ public class HomeController implements Initializable, PropertyChangeListener {
     }
 
 
-    public void openFileChooser() {
+    public void openFileChooser() throws IOException {
         final FileChooser fileChooser = new FileChooser();
 
-        File file = fileChooser.showOpenDialog(songNameLabel.getScene().getWindow());
+        final File file = fileChooser.showOpenDialog(songNameLabel.getScene().getWindow());
+
+        playListModel.addMediaFile(file);
+
+
+        System.out.println(file.getAbsolutePath());
 
     }
 

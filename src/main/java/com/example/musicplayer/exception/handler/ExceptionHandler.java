@@ -1,6 +1,6 @@
 package com.example.musicplayer.exception.handler;
 
-import javafx.application.Platform;
+import com.example.musicplayer.exception.ConfigLoadException;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import lombok.Getter;
@@ -30,16 +30,32 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread thread, Throwable e) {
 
-        if (e.getClass().equals(RuntimeException.class)) {
+
+//        if (e.getClass().equals(RuntimeException.class)) {
+//
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.showAndWait();
+//
+//
+//            Platform.exit();
+//
+//
+//        }
+
+        if (e.getClass().equals(ConfigLoadException.class)) {
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText(e.getMessage());
             alert.showAndWait();
-
-
-            Platform.exit();
+            
+            return;
 
 
         }
+
+
+        e.printStackTrace();
+        System.exit(1);
 
 
     }

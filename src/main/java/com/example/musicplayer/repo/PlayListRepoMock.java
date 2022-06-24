@@ -4,6 +4,7 @@ import com.example.musicplayer.entity.AudioFile;
 import com.example.musicplayer.entity.PlayList;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Optional;
 
 import static com.example.musicplayer.utility.ResourceUtility.getResource;
@@ -31,7 +32,7 @@ public class PlayListRepoMock implements PlayListRepo {
     };
 
 
-    private final PlayList testPlayList = new PlayList("Test", Arrays.stream(mockAudioFiles).toList());
+    private final PlayList testPlayList = new PlayList("Test", new LinkedList<>(Arrays.stream(mockAudioFiles).toList()));
 
 
     @Override

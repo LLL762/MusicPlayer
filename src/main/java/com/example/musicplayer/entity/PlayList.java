@@ -17,7 +17,7 @@ import java.util.List;
 public class PlayList {
 
     private String name;
-    private List<AudioFile> audioFileList = new LinkedList<>();
+    private LinkedList<AudioFile> audioFileList = new LinkedList<>();
 
 
     public PlayList(String name) {

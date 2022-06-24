@@ -3,7 +3,10 @@ package com.example.musicplayer;
 import com.example.musicplayer.controller.HomeController;
 import com.example.musicplayer.exception.handler.ExceptionHandler;
 import com.example.musicplayer.model.PlayListModel;
+import com.example.musicplayer.repo.PlayListRepo;
+import com.example.musicplayer.repo.PlayListRepoImpl;
 import com.example.musicplayer.repo.PlayListRepoMock;
+import com.example.musicplayer.service.PlayListServiceImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,6 +24,7 @@ public class HelloApplication extends Application {
 
 
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+
         launch();
 
 
@@ -33,8 +37,11 @@ public class HelloApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
 
 
-        PlayListRepoMock repoMock = new PlayListRepoMock();
-        PlayListModel playListModel = new PlayListModel(repoMock.getByName("Test").orElseThrow());
+        final PlayListRepoMock repoMock = new PlayListRepoMock();
+        final PlayListRepo playListRepo = new PlayListRepoImpl();
+        final PlayListModel playListModel = new PlayListModel(
+                repoMock.getByName("Test").orElseThrow(),
+                new PlayListServiceImpl(playListRepo));
 
         fxmlLoader.setControllerFactory(e -> {
 

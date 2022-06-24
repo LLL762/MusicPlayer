@@ -54,6 +54,7 @@ public class VolumeController implements PropertyChangeListener, Initializable {
 
     public void changeAudioVolume() {
 
+
         playListModel.getMediaPlayer().setVolume(volumeSlider.getValue());
 
     }

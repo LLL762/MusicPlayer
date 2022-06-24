@@ -1,5 +1,6 @@
 package com.example.musicplayer.controller;
 
+import com.example.musicplayer.model.PlayListModel;
 import javafx.fxml.FXML;
 
 /**
@@ -8,6 +9,8 @@ import javafx.fxml.FXML;
  * @author Laurent Lamiral
  */
 public class ListViewButtonController {
+
+    private PlayListModel playListModel;
 
 
     @FXML
