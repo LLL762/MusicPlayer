@@ -5,10 +5,11 @@ import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import java.io.File;
 import java.io.IOException;
 
-import com.example.musicplayer.exception.SaveFailException;
+import com.example.musicplayer.exception.ReadOperationFailsException;
+import com.example.musicplayer.exception.WriteOperationFailsException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-public enum XmlEntityMapper {
+public enum XmlEntityMapper implements EntityMapper {
 
 	INSTANCE;
 
@@ -26,7 +27,26 @@ public enum XmlEntityMapper {
 
 	}
 
-	public <T> T write(final String path, final T object) {
+	@Override
+	public <T> T read(final String path, Class<T> typeClass) throws ReadOperationFailsException {
+
+		final File file = new File(path);
+		T output;
+
+		try {
+			output = xmlMapper.readValue(file, typeClass);
+		} catch (IOException e) {
+
+			throw new ReadOperationFailsException();
+
+		}
+
+		return output;
+
+	}
+
+	@Override
+	public <T> T write(final String path, final T object) throws WriteOperationFailsException {
 
 		final File file = new File(path);
 
@@ -34,7 +54,7 @@ public enum XmlEntityMapper {
 			xmlMapper.writeValue(file, object);
 		} catch (IOException e) {
 
-			throw new SaveFailException();
+			throw new WriteOperationFailsException();
 
 		}
 

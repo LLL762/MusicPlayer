@@ -9,15 +9,13 @@ import javafx.scene.chart.BarChart;
  */
 public final class AudioBarChartBuilder {
 
-    private AudioBarChartBuilder() {
-    }
+	private AudioBarChartBuilder() {
+	}
 
-    public static void build(final BarChart<String, Number> audioBarChart) {
+	public static void build(final BarChart<String, Number> audioBarChart) {
 
-        audioBarChart.getYAxis().setAutoRanging(false);
+		audioBarChart.getYAxis().setAutoRanging(false);
 
-
-    }
-
+	}
 
 }

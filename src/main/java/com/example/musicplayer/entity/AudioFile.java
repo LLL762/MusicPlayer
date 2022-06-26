@@ -1,6 +1,12 @@
 package com.example.musicplayer.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 /**
@@ -17,8 +23,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 public class AudioFile {
 
-    String name;
-    String path;
-
+	String name;
+	String path;
 
 }

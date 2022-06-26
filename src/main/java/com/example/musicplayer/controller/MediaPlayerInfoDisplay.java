@@ -1,5 +1,10 @@
 package com.example.musicplayer.controller;
 
+import static lombok.AccessLevel.PRIVATE;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 import javafx.beans.InvalidationListener;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
@@ -11,136 +16,121 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-
-import static lombok.AccessLevel.PRIVATE;
-
 /**
  * 21/06/2022.
  * <p>
- * Manage  media player  display of spectrum data and current time.
+ * Manage media player display of spectrum data and current time.
  *
  * </p>
  *
  * @author Laurent Lamiral
  */
 
-
 @Getter
 @Setter
 @FieldDefaults(level = PRIVATE)
 public class MediaPlayerInfoDisplay {
 
-    final DecimalFormat formatter = new DecimalFormat("##0.00");
-    final DecimalFormatSymbols dfSymbols = new DecimalFormatSymbols();
+	final DecimalFormat formatter = new DecimalFormat("##0.00");
+	final DecimalFormatSymbols dfSymbols = new DecimalFormatSymbols();
 
-    final XYChart.Series<String, Number> topSeries = new XYChart.Series<>();
-    final XYChart.Series<String, Number> bottomSeries = new XYChart.Series<>();
-    final AudioSpectrumListener spectrumListener = this::displayAudio;
-    MediaPlayer mediaPlayer;
-    Slider audioTimeSlider;
-    Label durationLabel;
-    final InvalidationListener onMpCurrTimeChg = obs -> displayTime();
-    BarChart<String, Number> audioBarChart;
+	final XYChart.Series<String, Number> topSeries = new XYChart.Series<>();
+	final XYChart.Series<String, Number> bottomSeries = new XYChart.Series<>();
+	final AudioSpectrumListener spectrumListener = this::displayAudio;
+	MediaPlayer mediaPlayer;
+	Slider audioTimeSlider;
+	Label durationLabel;
+	final InvalidationListener onMpCurrTimeChg = obs -> displayTime();
+	BarChart<String, Number> audioBarChart;
 
+	public MediaPlayerInfoDisplay() {
 
-    public MediaPlayerInfoDisplay() {
+		init();
+	}
 
-        init();
-    }
+	private void init() {
+		dfSymbols.setDecimalSeparator(':');
+		formatter.setDecimalFormatSymbols(dfSymbols);
+	}
 
-    private void init() {
-        dfSymbols.setDecimalSeparator(':');
-        formatter.setDecimalFormatSymbols(dfSymbols);
-    }
+	public void setUpAll() {
 
+		setUpMediaPlayer();
+		setUpAudioBarChart();
 
-    public void setUpAll() {
+	}
 
-        setUpMediaPlayer();
-        setUpAudioBarChart();
+	public void setUpMediaPlayer() {
 
-    }
+		addMpCurrTimeChg();
+		setSpectrumListener();
 
+	}
 
-    public void setUpMediaPlayer() {
+	public void setUpAudioBarChart() {
 
-        addMpCurrTimeChg();
-        setSpectrumListener();
+		audioBarChart.getYAxis().setAutoRanging(false);
 
+		audioBarChart.getData().add(topSeries);
+		audioBarChart.getData().add(bottomSeries);
 
-    }
+	}
 
-    public void setUpAudioBarChart() {
+	public void setSpectrumListener() {
 
-        audioBarChart.getYAxis().setAutoRanging(false);
+		mediaPlayer.setAudioSpectrumListener(spectrumListener);
 
-        audioBarChart.getData().add(topSeries);
-        audioBarChart.getData().add(bottomSeries);
+	}
 
+	public void removeSpectrumListener() {
 
-    }
+		mediaPlayer.setAudioSpectrumListener(null);
 
+	}
 
-    public void setSpectrumListener() {
+	public void addMpCurrTimeChg() {
 
-        mediaPlayer.setAudioSpectrumListener(spectrumListener);
+		mediaPlayer.currentTimeProperty().addListener(onMpCurrTimeChg);
 
-    }
+	}
 
-    public void removeSpectrumListener() {
+	public void removeMpCurrTimeChg() {
 
-        mediaPlayer.setAudioSpectrumListener(null);
+		mediaPlayer.currentTimeProperty().removeListener(onMpCurrTimeChg);
 
-    }
+	}
 
+	private void displayAudio(double timestamps, double duration, float[] magnitudes, float[] phases) {
 
-    public void addMpCurrTimeChg() {
+		topSeries.getData().clear();
+		bottomSeries.getData().clear();
 
-        mediaPlayer.currentTimeProperty().addListener(onMpCurrTimeChg);
+		/*
+		 * Ajoute les magnitudes (taille 128) au diagramme -60 est la valeur minimale de
+		 * la magnitude
+		 */
+		for (int i = 0; i < magnitudes.length; i++) {
 
-    }
+			/* Partie haute positive */
+			topSeries.getData().add(new XYChart.Data<>(String.valueOf(i), magnitudes[i] + 60));
 
-    public void removeMpCurrTimeChg() {
+			/* Partie basse négative */
+			bottomSeries.getData()
+						.add(new XYChart.Data<>(String.valueOf(i), -(magnitudes[i] + 60)));
 
-        mediaPlayer.currentTimeProperty().removeListener(onMpCurrTimeChg);
+		}
 
-    }
+	}
 
-    private void displayAudio(double timestamps, double duration, float[] magnitudes, float[] phases) {
+	private void displayTime() {
 
-        topSeries.getData().clear();
-        bottomSeries.getData().clear();
+		final double minutes = mediaPlayer.getCurrentTime().toMinutes();
 
-        /*
-         * Ajoute les magnitudes (taille 128) au diagramme -60 est la valeur minimale de
-         * la magnitude
-         */
-        for (int i = 0; i < magnitudes.length; i++) {
+		audioTimeSlider.setValue(mediaPlayer.getCurrentTime().toMinutes());
 
-            /* Partie haute positive */
-            topSeries.getData().add(new XYChart.Data<>(String.valueOf(i), magnitudes[i] + 60));
+		durationLabel.setText(
+				formatter.format(minutes) + "/" + formatter.format(mediaPlayer.getTotalDuration().toMinutes()));
 
-            /* Partie basse négative */
-            bottomSeries.getData()
-                    .add(new XYChart.Data<>(String.valueOf(i), -(magnitudes[i] + 60)));
-
-        }
-
-    }
-
-
-    private void displayTime() {
-
-        final double minutes = mediaPlayer.getCurrentTime().toMinutes();
-
-        audioTimeSlider.setValue(mediaPlayer.getCurrentTime().toMinutes());
-
-        durationLabel.setText(
-                formatter.format(minutes) + "/" + formatter.format(mediaPlayer.getTotalDuration().toMinutes()));
-
-    }
-
+	}
 
 }

@@ -1,11 +1,11 @@
 package com.example.musicplayer.exception;
 
-public class SaveFailException extends RuntimeException {
+public class WriteOperationFailsException extends RuntimeException {
 
 	/**
 	 *
 	 */
-	public SaveFailException() {
+	public WriteOperationFailsException() {
 		super();
 
 	}
@@ -16,7 +16,7 @@ public class SaveFailException extends RuntimeException {
 	 * @param enableSuppression
 	 * @param writableStackTrace
 	 */
-	public SaveFailException(String message, Throwable cause, boolean enableSuppression,
+	public WriteOperationFailsException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 
@@ -26,7 +26,7 @@ public class SaveFailException extends RuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public SaveFailException(String message, Throwable cause) {
+	public WriteOperationFailsException(String message, Throwable cause) {
 		super(message, cause);
 
 	}
@@ -34,7 +34,7 @@ public class SaveFailException extends RuntimeException {
 	/**
 	 * @param message
 	 */
-	public SaveFailException(String message) {
+	public WriteOperationFailsException(String message) {
 		super(message);
 
 	}
@@ -42,7 +42,7 @@ public class SaveFailException extends RuntimeException {
 	/**
 	 * @param cause
 	 */
-	public SaveFailException(Throwable cause) {
+	public WriteOperationFailsException(Throwable cause) {
 		super(cause);
 
 	}

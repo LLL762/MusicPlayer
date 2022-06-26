@@ -1,16 +1,17 @@
 package com.example.musicplayer.controller;
 
-import com.example.musicplayer.component.SpeedComboBuilder;
-import com.example.musicplayer.model.PlayListModel;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.media.MediaPlayer;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.example.musicplayer.component.SpeedComboBuilder;
+import com.example.musicplayer.model.PlayListModel;
+
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
+import javafx.scene.media.MediaPlayer;
 
 /**
  * 21/06/2022.
@@ -18,61 +19,56 @@ import java.util.ResourceBundle;
  * @author Laurent Lamiral
  */
 
-
 public class SpeedController implements PropertyChangeListener, Initializable {
 
-    private PlayListModel playListModel;
+	private PlayListModel playListModel;
 
-    @FXML
-    private ComboBox<String> speedComboBox;
+	@FXML
+	private ComboBox<String> speedComboBox;
 
-    public SpeedController(PlayListModel playListModel) {
-        this.playListModel = playListModel;
+	public SpeedController(PlayListModel playListModel) {
+		this.playListModel = playListModel;
 
-    }
+	}
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        init();
-    }
+	@Override
+	public void initialize(URL url, ResourceBundle resourceBundle) {
+		init();
+	}
 
-    public void init() {
+	public void init() {
 
-        SpeedComboBuilder.build(speedComboBox);
+		SpeedComboBuilder.build(speedComboBox);
 
-        playListModel.addPropertyChangeListener(this);
+		playListModel.addPropertyChangeListener(this);
 
-    }
+	}
 
+	@FXML
+	void changeSpeed() {
 
-    @FXML
-    void changeSpeed() {
+		playListModel.getMediaPlayer().setRate(comboValueToDouble());
 
-        playListModel.getMediaPlayer().
-                setRate(comboValueToDouble());
+	}
 
-    }
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
 
+		MediaPlayer newMediaPlayer;
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getPropertyName().equals("media-change")) {
 
-        MediaPlayer newMediaPlayer;
+			newMediaPlayer = (MediaPlayer) evt.getNewValue();
 
-        if (evt.getPropertyName().equals("media-change")) {
+			newMediaPlayer.setRate(comboValueToDouble());
+		}
 
-            newMediaPlayer = (MediaPlayer) evt.getNewValue();
+	}
 
-            newMediaPlayer.setRate(comboValueToDouble());
-        }
+	private double comboValueToDouble() {
 
-    }
+		return Double.parseDouble(speedComboBox.getValue().substring(1));
 
-    private double comboValueToDouble() {
-
-        return Double.parseDouble(speedComboBox.getValue().substring(1));
-
-    }
-
+	}
 
 }

@@ -32,7 +32,6 @@ public class PlayListRepoMock implements PlayListRepo {
 	private final PlayList testPlayList = new PlayList("Test",
 			new LinkedList<>(Arrays.stream(mockAudioFiles).toList()));
 
-	@Override
 	public Optional<PlayList> getByName(String name) {
 		return name.equals("Test") ? Optional.of(testPlayList) : Optional.empty();
 	}

@@ -27,7 +27,6 @@ public class PlayListRepoImpl implements PlayListRepo {
 		}
 	}
 
-	@Override
 	public Optional<PlayList> getByName(String name) {
 
 		final File folder = new File(FOLDER_PATH);

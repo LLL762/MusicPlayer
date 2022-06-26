@@ -14,7 +14,9 @@ module com.example.musicplayer {
 	exports com.example.musicplayer.entity;
 	exports com.example.musicplayer.repo;
 	exports com.example.musicplayer.service;
+	exports com.example.musicplayer.entitymanager;
 
 	opens com.example.musicplayer.controller to javafx.fxml;
+	opens com.example.musicplayer.entity;
 
 }
