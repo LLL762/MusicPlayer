@@ -120,7 +120,7 @@ class UserSettingsRepoImplTest {
 		assertThat(repo.save(newSettings)).isEqualTo(newSettings);
 
 		verify(mapper, never()).write(any(), any());
-		verify(manager, never()).setCurrentSettings(newSettings);
+		verify(manager, never()).setCurrentSettings(any());
 
 	}
 
@@ -141,7 +141,7 @@ class UserSettingsRepoImplTest {
 
 		assertThatExceptionOfType(WriteOperationFailsException.class).isThrownBy(() -> repo.save(newSettings));
 
-		verify(manager, never()).setCurrentSettings(newSettings);
+		verify(manager, never()).setCurrentSettings(any());
 
 	}
 

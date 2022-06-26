@@ -8,4 +8,8 @@ public interface UserSettingsRepo extends Repo<UserSettings> {
 
 	Optional<UserSettings> get();
 
+	UserSettings restore();
+
+	UserSettings restorePrevious();
+
 }

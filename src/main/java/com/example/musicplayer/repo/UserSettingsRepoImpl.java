@@ -1,5 +1,6 @@
 package com.example.musicplayer.repo;
 
+import java.io.File;
 import java.util.Optional;
 
 import com.example.musicplayer.config.AppConfig;
@@ -7,6 +8,7 @@ import com.example.musicplayer.entity.UserSettings;
 import com.example.musicplayer.entitymanager.UserSettingsManager;
 import com.example.musicplayer.exception.ResourceNotFoundException;
 import com.example.musicplayer.utility.ResourceUtility;
+import com.example.musicplayer.utility.reset.DefaultUserSettings;
 
 public class UserSettingsRepoImpl implements UserSettingsRepo {
 
@@ -16,7 +18,7 @@ public class UserSettingsRepoImpl implements UserSettingsRepo {
 
 	private final EntityMapper mapper;
 
-	private static final String PROPERTY_NAME = "settings.preferences-path";
+	private static final String PROPERTY_NAME = "settings.path";
 
 	public UserSettingsRepoImpl(final UserSettingsManager manager, final EntityMapper mapper) {
 
@@ -41,7 +43,7 @@ public class UserSettingsRepoImpl implements UserSettingsRepo {
 	}
 
 	public void refresh() {
-		AppConfig.INSTANCE.refresh();
+
 		init();
 
 	}
@@ -75,7 +77,7 @@ public class UserSettingsRepoImpl implements UserSettingsRepo {
 
 		final UserSettings output;
 
-		if (manager.getCurrentSettings().equals(userPreferences)) {
+		if (manager.getCurrentSettings() != null && manager.getCurrentSettings().equals(userPreferences)) {
 
 			return userPreferences;
 
@@ -86,5 +88,20 @@ public class UserSettingsRepoImpl implements UserSettingsRepo {
 
 		return output;
 
+	}
+
+	@Override
+	public UserSettings restore() {
+
+		new File(path);
+
+		return save(DefaultUserSettings.build());
+
+	}
+
+	@Override
+	public UserSettings restorePrevious() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
