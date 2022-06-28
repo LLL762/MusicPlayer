@@ -13,8 +13,6 @@ Osrc/main/java/com/example/musicplayer/controller/AudioTimeSliderController.java
 Lsrc/main/java/com/example/musicplayer/controller/SongListViewController.java,2\4\24dab38d66167e418db6557299145dcadb4e48eb
 l
 <src/main/java/com/example/musicplayer/repo/PlayListRepo.java,b\3\b36dd5405d370c304d5bc822bafdc5646de15eca
-r
-Bsrc/main/java/com/example/musicplayer/utility/ResourceUtility.java,7\8\78e9ecc6645e0702a51408d26b57d364ff6cb1ec
 }
 Msrc/main/java/com/example/musicplayer/controller/DurationLabelController.java,1\b\1b6d602b89015c082fa898c7434e524c4aedd11e
 ~
@@ -23,3 +21,10 @@ Nsrc/main/java/com/example/musicplayer/controller/MediaButtonBarController.java
 pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
 d
 4src/main/java/com/example/musicplayer/repo/Repo.java,9\5\9587cfafaa65d588ef1f44765e49aa729b17ecc2
+l
+<src/main/java/com/example/musicplayer/repo/EntityMapper.java,e\0\e0fc41e5038194755c8a2d30faa9cf87fc8aacd7
+:
+
+.gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
+j
+:src/main/java/com/example/musicplayer/entity/PlayList.java,3\3\33070f47a59a4eb889f6a86c9988ecda12048d3e

@@ -1,107 +1,124 @@
 package com.example.musicplayer.repo;
 
-import java.io.File;
-import java.util.Optional;
-
 import com.example.musicplayer.config.AppConfig;
 import com.example.musicplayer.entity.UserSettings;
 import com.example.musicplayer.entitymanager.UserSettingsManager;
-import com.example.musicplayer.exception.ResourceNotFoundException;
-import com.example.musicplayer.utility.ResourceUtility;
 import com.example.musicplayer.utility.reset.DefaultUserSettings;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+
+import static com.example.musicplayer.utility.ResourceUtility.getResourcePath;
 
 public class UserSettingsRepoImpl implements UserSettingsRepo {
 
-	private String path;
+    private static final String PROPERTY_NAME = "settings.path";
+    private final UserSettingsManager manager;
 
-	private final UserSettingsManager manager;
+    private final EntityMapper mapper;
+    private String path;
 
-	private final EntityMapper mapper;
+    public UserSettingsRepoImpl(final UserSettingsManager manager, final EntityMapper mapper) {
 
-	private static final String PROPERTY_NAME = "settings.path";
+        this.manager = manager;
+        this.mapper = mapper;
 
-	public UserSettingsRepoImpl(final UserSettingsManager manager, final EntityMapper mapper) {
+        //   init();
 
-		this.manager = manager;
-		this.mapper = mapper;
+    }
 
-		init();
+    public void init() {
 
-	}
+        final String relativePath = AppConfig.INSTANCE.getProperty(PROPERTY_NAME);
 
-	public void init() {
+        try {
+            path = getResourcePath(relativePath);
+        } catch (NullPointerException e) {
 
-		final String relativePath = AppConfig.INSTANCE.getProperty(PROPERTY_NAME);
 
-		try {
-			path = ResourceUtility.getResourcePath(relativePath);
-		} catch (NullPointerException e) {
+            //	throw new ResourceNotFoundException("Missing file : " + relativePath);
+        }
 
-			throw new ResourceNotFoundException("Missing file : " + relativePath);
-		}
+    }
 
-	}
+    public void refresh() {
 
-	public void refresh() {
+        init();
 
-		init();
+    }
 
-	}
+    @Override
+    public Optional<UserSettings> get() {
 
-	@Override
-	public Optional<UserSettings> get() {
+        UserSettings outputValue;
 
-		UserSettings outputValue;
+        if (manager.getCurrentSettings() != null) {
 
-		if (manager.getCurrentSettings() != null) {
+            return Optional.of(manager.getCurrentSettings());
 
-			return Optional.of(manager.getCurrentSettings());
+        }
 
-		}
+        outputValue = mapper.read(path, UserSettings.class);
 
-		outputValue = mapper.read(path, UserSettings.class);
+        if (outputValue == null) {
 
-		if (outputValue == null) {
+            return Optional.empty();
+        }
 
-			return Optional.empty();
-		}
+        manager.setCurrentSettings(outputValue);
 
-		manager.setCurrentSettings(outputValue);
+        return Optional.of(outputValue);
 
-		return Optional.of(outputValue);
+    }
 
-	}
+    @Override
+    public UserSettings save(UserSettings userPreferences) {
 
-	@Override
-	public UserSettings save(UserSettings userPreferences) {
+        final UserSettings output;
 
-		final UserSettings output;
+        if (manager.getCurrentSettings() != null && manager.getCurrentSettings().equals(userPreferences)) {
 
-		if (manager.getCurrentSettings() != null && manager.getCurrentSettings().equals(userPreferences)) {
+            return userPreferences;
 
-			return userPreferences;
+        }
 
-		}
+        output = mapper.write(path, userPreferences);
+        manager.setCurrentSettings(output);
 
-		output = mapper.write(path, userPreferences);
-		manager.setCurrentSettings(output);
+        return output;
 
-		return output;
+    }
 
-	}
+    @Override
+    public UserSettings restore() {
 
-	@Override
-	public UserSettings restore() {
+        final String relativePath = AppConfig.INSTANCE.getProperty(PROPERTY_NAME);
 
-		new File(path);
 
-		return save(DefaultUserSettings.build());
+        Path source = null;
 
-	}
+        source = Paths.get("/src/main/resources").toAbsolutePath();
 
-	@Override
-	public UserSettings restorePrevious() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+        Path newFolder = Paths.get(source + "/newFolder/");
+
+        try {
+            Files.createDirectories(newFolder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return save(DefaultUserSettings.build());
+
+    }
+
+    @Override
+    public UserSettings restorePrevious() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
